@@ -25,20 +25,49 @@ var delta;
 var camera = new Array(3);
 var activeCamera = 0;
 
+var r = 20;
+
 
 function createPlanet(x, y, z){
 	
 	var planet = new THREE.Object3D();
 	
 	
-	geometry = new THREE.SphereGeometry( 12, 32, 16 );
-	material = new THREE.MeshBasicMaterial( { color: 0x000080, wireframe: false } );
+	geometry = new THREE.SphereGeometry( r*2, 32, 16 );
+	material = new THREE.MeshBasicMaterial( { color: 0x000080, wireframe: true } );
 	mesh = new THREE.Mesh(geometry, material);
 	
 	planet.add(mesh);
 	planet.position.set(x, y, z);
 	
 	scene.add(planet);
+}
+
+
+function createCone(object, x, y, z) {
+	geometry = new THREE.ConeGeometry( r/44, r/22, 32 );
+	material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+	mesh = new THREE.Mesh( geometry, material );
+	
+	mesh.position.set(x, y, z);
+	
+	object.add(mesh);
+}
+
+function createTrashCones() {
+	var phi = Math.random()*4*Math.PI;
+	var teta = Math.random()*4*Math.PI;
+	var raio = 1.2*r;
+	
+	var x = raio*Math.sin(teta)*Math.cos(phi)
+	var y = raio*Math.sin(teta)*Math.sin(phi)
+	var z = raio*Math.cos(teta)
+	
+	var trash = new THREE.Object3D();
+	
+	createCone(trash, x, y, z);
+	
+	scene.add(trash);
 }
 
 
@@ -50,12 +79,13 @@ function createScene(){
 	
 	
 	createPlanet(0, 0, 0);
-
+	createTrashCones();
 }
+
 
 function createFrontalCamera() {
 
-    camera[0] = new THREE.OrthographicCamera(-50, 50, 25, -25, 0.1, 10000);
+    camera[0] = new THREE.OrthographicCamera(-100, 100, 50, -50, 0.1, 10000);
 
     camera[0].lookAt(scene.position);
     camera[0].position.y = 0;
