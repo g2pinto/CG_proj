@@ -21,11 +21,13 @@ var mov_speed = 5; //units a second
 var rot_speed = 1;
 var delta;
 
+const NUM_CONES = 8;
+
 //Cameras
 var camera = new Array(3);
 var activeCamera = 0;
 
-var r = 20;
+var r = 12;
 
 
 function createPlanet(x, y, z){
@@ -34,28 +36,28 @@ function createPlanet(x, y, z){
 }
 
 
-function createCone(object, x, y, z) {
+function createCone(object, raio, phi, teta) {
+	var spherical = new THREE.Spherical();
 	geometry = new THREE.ConeGeometry( r/44, r/22, 32 );
 	material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
 	mesh = new THREE.Mesh( geometry, material );
 	
-	mesh.position.set(x, y, z);
-	
+	spherical.set( raio, phi, teta );
+    mesh.position.setFromSpherical( spherical );
+		
 	object.add(mesh);
 }
 
 function createTrashCones() {
-	var phi = Math.random()*4*Math.PI;
-	var teta = Math.random()*4*Math.PI;
-	var raio = 1.2*r;
-	
-	var x = raio*Math.sin(teta)*Math.cos(phi)
-	var y = raio*Math.sin(teta)*Math.sin(phi)
-	var z = raio*Math.cos(teta)
-	
-	var trash = new THREE.Object3D();
-	
-	createCone(trash, x, y, z);
+    var trash = new THREE.Object3D();
+    for (let i = 0; i < NUM_CONES; i++){
+        var phi = Math.random()*Math.PI;
+        var teta = Math.random()*2*Math.PI;
+        var raio = 1.2*r;
+        
+        createCone(trash, raio, phi, teta);
+    }
+    createCone(trash, raio, 0, 2*Math.PI);
 	
 	scene.add(trash);
 }
@@ -70,7 +72,7 @@ function createScene(){
     planet = new THREE.Object3D();
 	
 	
-	geometry = new THREE.SphereGeometry( 12, 32, 16 );
+	geometry = new THREE.SphereGeometry( r, 32, 16 );
 	material = new THREE.MeshBasicMaterial( { color: 0x000080, wireframe: true } );
 	mesh = new THREE.Mesh(geometry, material);
 	
