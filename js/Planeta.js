@@ -78,6 +78,7 @@ function createScene(){
 	planet.position.set(0,0,0);
 	
 	scene.add(planet);
+	createTrashCones()
 	
 	shipBody = new THREE.Object3D();
 	
@@ -98,7 +99,7 @@ function createScene(){
 
 function createFrontalCamera() {
 
-    camera[0] = new THREE.OrthographicCamera(-100, 100, 50, -50, 0.1, 10000);
+    camera[0] = new THREE.OrthographicCamera(-50, 50, 25, -25, 0.1, 10000);
 
     camera[0].lookAt(scene.position);
     camera[0].position.y = 0;
