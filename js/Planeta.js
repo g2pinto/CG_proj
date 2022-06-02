@@ -22,12 +22,42 @@ var rot_speed = 1;
 var delta;
 
 const NUM_CONES = 8;
+var cones = new Array(8);
 
 //Cameras
 var camera = new Array(3);
 var activeCamera = 0;
 
 var r = 12;
+
+function inNorthEast(object, radius){
+    if (object.position.x + radius >= 0 && object.position.y + radius >= 0){
+        return true;
+    } else {
+        return false;
+    }
+}
+function inNorthWest(object, radius){
+    if (object.position.x - radius <= 0 && object.position.y + radius >= 0){
+        return true;
+    } else {
+        return false;
+    }
+}
+function inSouthEast(object, radius){
+    if (object.position.x + radius >= 0 && object.position.y - radius <= 0){
+        return true;
+    } else {
+        return false;
+    }
+}
+function inSouthWest(object, radius){
+    if (object.position.x + radius >= 0 && object.position.y - radius <= 0){
+        return true;
+    } else {
+        return false;
+    }
+}
 
 
 function createPlanet(x, y, z){
@@ -36,28 +66,29 @@ function createPlanet(x, y, z){
 }
 
 
-function createCone(object, raio, phi, teta) {
+function createCone(object, raio, phi, teta, cone) {
 	var spherical = new THREE.Spherical();
+    cones[cone] = new THREE.Object3D();
 	geometry = new THREE.ConeGeometry( r/44, r/22, 32 );
-	material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+	material = new THREE.MeshBasicMaterial( {color: 0xffff00, wireframe: false} );
 	mesh = new THREE.Mesh( geometry, material );
 	
 	spherical.set( raio, phi, teta );
-    mesh.position.setFromSpherical( spherical );
+    cones[cone].position.setFromSpherical( spherical );
 		
-	object.add(mesh);
+	cones[cone].add(mesh);
+    object.add(cones[cone]);
 }
 
 function createTrashCones() {
     var trash = new THREE.Object3D();
     for (let i = 0; i < NUM_CONES; i++){
-        var phi = Math.random()*Math.PI;
+        var phi = Math.random()*2*Math.PI;
         var teta = Math.random()*2*Math.PI;
         var raio = 1.2*r;
-        
-        createCone(trash, raio, phi, teta);
+        createCone(trash, raio, phi, teta, i);
     }
-    createCone(trash, raio, 0, 2*Math.PI);
+
 	
 	scene.add(trash);
 }
@@ -96,12 +127,13 @@ function createScene(){
     scene.add(shipAux);
     //shipBody.position.y = 14.4;
     shipBody.position.x = 14.4;
+
 }
 
 
 function createFrontalCamera() {
 
-    camera[0] = new THREE.OrthographicCamera(-50, 50, 25, -25, 0.1, 10000);
+    camera[0] = new THREE.OrthographicCamera(-40, 40, 20, -20, 0.1, 10000);
 
     camera[0].lookAt(scene.position);
     camera[0].position.y = 0;
