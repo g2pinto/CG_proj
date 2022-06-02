@@ -93,6 +93,59 @@ function createTrashCones() {
 	scene.add(trash);
 }
 
+var phii;
+var tetaa;
+function createShip(){
+    shipBody = new THREE.Object3D();
+	
+    phii = Math.random()*Math.PI;
+    tetaa = Math.random()*2*Math.PI;
+    var raio = 1.4*r;
+
+    var spherical = new THREE.Spherical();
+
+	
+	geometry = new THREE.CylinderGeometry( 3, 3, 15,64);
+	material = new THREE.MeshBasicMaterial( { color: 0x0600560, wireframe: false } );
+	mesh = new THREE.Mesh(geometry, material);
+	
+	shipBody.add(mesh);
+	
+    
+    geometry = new THREE.CylinderGeometry( 0, 3, 2,64);
+	material = new THREE.MeshBasicMaterial( { color: 0x6557780, wireframe: false } );
+	mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0,8.5,0);
+    shipBody.add(mesh);
+
+    geometry = new THREE.CapsuleGeometry(2,6,1,90);
+	material = new THREE.MeshBasicMaterial( { color: 0x0685560, wireframe: false } );
+	mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(5,-2.5,0);
+	shipBody.add(mesh);
+
+    geometry = new THREE.CapsuleGeometry(2,6,1,90);
+	material = new THREE.MeshBasicMaterial( { color: 0x0685560, wireframe: false } );
+	mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(-5,-2.5,0);
+	shipBody.add(mesh);
+
+    geometry = new THREE.CapsuleGeometry(2,6,1,90);
+	material = new THREE.MeshBasicMaterial( { color: 0x0685560, wireframe: false } );
+	mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(0,-2.5,5);
+	shipBody.add(mesh);
+
+    geometry = new THREE.CapsuleGeometry(2,6,1,90);
+	material = new THREE.MeshBasicMaterial( { color: 0x0685560, wireframe: false } );
+	mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(0,-2.5,-5);
+	shipBody.add(mesh);
+    spherical.set( raio, phii, tetaa );
+    shipBody.position.setFromSpherical( spherical );
+    scene.add(shipBody);
+    shipBody.scale.setScalar( 1/11 );
+}
 
 function createScene(){
 	
@@ -111,23 +164,9 @@ function createScene(){
 	planet.position.set(0,0,0);
 	
 	scene.add(planet);
-	createTrashCones()
+    createShip();
+    createTrashCones();
 	
-	shipBody = new THREE.Object3D();
-	
-	
-	geometry = new THREE.CylinderGeometry( 3, 3, 5,64);
-	material = new THREE.MeshBasicMaterial( { color: 0x0600560, wireframe: false } );
-	mesh = new THREE.Mesh(geometry, material);
-	
-	shipBody.add(mesh);
-	shipAux = new THREE.Object3D();
-
-    shipAux.add(shipBody);
-    scene.add(shipAux);
-    //shipBody.position.y = 14.4;
-    shipBody.position.x = 14.4;
-
 }
 
 
@@ -143,20 +182,17 @@ function createFrontalCamera() {
 
 function createShipCamera() {
 
-    camera[1] = new THREE.OrthographicCamera(-50, 50, 25, -25, 0.1, 10000);
-    var objectPosition = new THREE.Vector3();
-    shipBody.getWorldPosition(objectPosition);
-    camera[1].lookAt(objectPosition);
-    camera[1].position.y = objectPosition.y+5.0;
-    camera[1].position.z = objectPosition.z-5.0;
-    camera[1].position.x = objectPosition.x;
+    camera[1] = new THREE.PerspectiveCamera(45,1,1000);
+    camera[1].lookAt(shipBody.position);
+    camera[1].position.y = shipBody.y+5.0;
+    camera[1].position.z = shipBody.z-5.0;
+    camera[1].position.x = shipBody.x;
 
 }
 
 function onDocumentKeyDown(event){
     var keyCode = event.keyCode;
     keyMap[keyCode] = true;
-
     if(keyMap[52]) { //4
       material.wireframe = !material.wireframe;
     }
@@ -170,21 +206,27 @@ function onDocumentKeyUp(event){
 
 
 function update(){
+    var spherical = new THREE.Spherical();
+
+    delta = clock.getDelta();
+	var movement_value = delta;
+    
+    
 	
     if (keyMap[37]) {//left
-        shipAux.rotateY(0.05);
-    }
+        
+}
 
     if (keyMap[38]) {//up
-        shipAux.rotateX(0.05);
+        shipBody.rotateX(-0.05);
 
     }
     if (keyMap[39]) {//right
-        shipAux.rotateY(-0.05);
+        shipBody.rotateY(0.05);
 
     }
     if (keyMap[40]) {//down
-        shipAux.rotateX(-0.05);
+        shipBody.rotateX(0.05);
     }
     
     if(keyMap[49]) { //1
@@ -199,6 +241,11 @@ function update(){
 
 
 
+    /* var radius = 14.4;
+    phi = THREE.MathUtils.degToRad(90);
+    theta = THREE.MathUtils.degToRad(270);
+    shipAux.position.setFromSphericalCoords(radius, phi, theta);
+ */
 }
 
 function createCameras(){
