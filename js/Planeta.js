@@ -1,6 +1,11 @@
 /*global THREE, requestAnimationFrame, console*/
 'use strict';
 
+
+var controls;
+
+
+
 var scene, renderer;
 
 var geometry, material, mesh;
@@ -30,12 +35,6 @@ var activeCamera = 0;
 var r = 12;
 
 
-function createPlanet(x, y, z){
-	
-	
-}
-
-
 function createCone(object, raio, phi, teta) {
 	var spherical = new THREE.Spherical();
 	geometry = new THREE.ConeGeometry( r/44, r/22, 32 );
@@ -62,19 +61,18 @@ function createTrashCones() {
 	scene.add(trash);
 }
 
-var phii;
-var tetaa;
+
 function createShip(){
     shipBody = new THREE.Object3D();
 	
-    phii = Math.random()*Math.PI;
-    tetaa = Math.random()*2*Math.PI;
-    var raio = 1.4*r;
+    var phi = Math.random()*Math.PI;
+    var teta = Math.random()*2*Math.PI;
+    var raio = 1.2*r;
 
     var spherical = new THREE.Spherical();
 
 	
-	geometry = new THREE.CylinderGeometry( 3, 3, 15,64);
+	geometry = new THREE.CylinderGeometry( 3, 3, 10,64);
 	material = new THREE.MeshBasicMaterial( { color: 0x0600560, wireframe: false } );
 	mesh = new THREE.Mesh(geometry, material);
 	
@@ -84,33 +82,35 @@ function createShip(){
     geometry = new THREE.CylinderGeometry( 0, 3, 2,64);
 	material = new THREE.MeshBasicMaterial( { color: 0x6557780, wireframe: false } );
 	mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0,8.5,0);
+    mesh.position.set(0,6,0);
     shipBody.add(mesh);
 
-    geometry = new THREE.CapsuleGeometry(2,6,1,90);
+    geometry = new THREE.CapsuleGeometry(2,3,1,90);
 	material = new THREE.MeshBasicMaterial( { color: 0x0685560, wireframe: false } );
 	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(5,-2.5,0);
+	mesh.position.set(5,-1,0);
 	shipBody.add(mesh);
 
-    geometry = new THREE.CapsuleGeometry(2,6,1,90);
+    geometry = new THREE.CapsuleGeometry(2,3,1,90);
 	material = new THREE.MeshBasicMaterial( { color: 0x0685560, wireframe: false } );
 	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(-5,-2.5,0);
+	mesh.position.set(-5,-1,0);
 	shipBody.add(mesh);
 
-    geometry = new THREE.CapsuleGeometry(2,6,1,90);
+    geometry = new THREE.CapsuleGeometry(2,3,1,90);
 	material = new THREE.MeshBasicMaterial( { color: 0x0685560, wireframe: false } );
 	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(0,-2.5,5);
+	mesh.position.set(0,-1,5);
 	shipBody.add(mesh);
 
-    geometry = new THREE.CapsuleGeometry(2,6,1,90);
+    geometry = new THREE.CapsuleGeometry(2,3,1,90);
 	material = new THREE.MeshBasicMaterial( { color: 0x0685560, wireframe: false } );
 	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(0,-2.5,-5);
+	mesh.position.set(0,-1,-5);
 	shipBody.add(mesh);
-    spherical.set( raio, phii, tetaa );
+
+
+    spherical.set( raio, phi, teta );
     shipBody.position.setFromSpherical( spherical );
     scene.add(shipBody);
     shipBody.scale.setScalar( 1/11 );
@@ -149,14 +149,11 @@ function createFrontalCamera() {
 
 }
 
+
+
 function createShipCamera() {
 
-    camera[1] = new THREE.PerspectiveCamera(45,1,1000);
-    camera[1].lookAt(shipBody.position);
-    camera[1].position.y = shipBody.y+5.0;
-    camera[1].position.z = shipBody.z-5.0;
-    camera[1].position.x = shipBody.x;
-
+    camera[2] = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1, 1000);
 }
 
 function onDocumentKeyDown(event){
@@ -173,29 +170,48 @@ function onDocumentKeyUp(event){
 }
 
 
+function isNegativeX(){
+    if(shipBody.position.x < 0)return true;
+    else return false;
+}
 
 function update(){
-    var spherical = new THREE.Spherical();
-
+    var sphericalAux = new THREE.Spherical();
+    sphericalAux.setFromCartesianCoords(shipBody.position.x, shipBody.position.y, shipBody.position.z);
+    
     delta = clock.getDelta();
-	var movement_value = delta;
+    //console.log(delta);
     
     
 	
     if (keyMap[37]) {//left
-        
+        sphericalAux.theta -= Math.PI / 180;
+        shipBody.position.setFromSpherical(sphericalAux);
 }
 
     if (keyMap[38]) {//up
-        shipBody.rotateX(-0.05);
+        if(isNegativeX()){
+            sphericalAux.phi -=0.5* Math.PI / 180;
+            shipBody.rotateX(-0.5* Math.PI / 180);
+
+        }
+        else sphericalAux.phi +=0.5* Math.PI / 180;
+        shipBody.position.setFromSpherical(sphericalAux);
 
     }
     if (keyMap[39]) {//right
-        shipBody.rotateY(0.05);
-
+        console.log(sphericalAux.theta);
+        sphericalAux.theta += Math.PI / 180;
+        shipBody.position.setFromSpherical(sphericalAux);
     }
     if (keyMap[40]) {//down
-        shipBody.rotateX(0.05);
+         
+        
+        if(isNegativeX()){
+            sphericalAux.phi +=0.5* Math.PI / 180;
+        }
+        else sphericalAux.phi -=0.5* Math.PI / 180;
+        shipBody.position.setFromSpherical(sphericalAux);
     }
     
     if(keyMap[49]) { //1
@@ -208,7 +224,8 @@ function update(){
         activeCamera = 2;
     }
 
-
+    
+  
 
     /* var radius = 14.4;
     phi = THREE.MathUtils.degToRad(90);
@@ -235,25 +252,39 @@ function init() {
 
     createScene();
     createCameras();
-
     document.addEventListener("keydown", onDocumentKeyDown, true);
     document.addEventListener("keyup", onDocumentKeyUp, true);
 
 }
+
 
 function animate() {
 
 
     update();
 
-    renderer.render(scene, camera[activeCamera]);
+    render();
 
     requestAnimationFrame( animate );
 
-    
-    //planet.rotateY(0.004);
+}
 
-    //shipAux.rotateY(-0.05);
-    /*shipAux.rotateX(0.0005); */
-
+function render() {
+    "use strict";
+    var followVec = new THREE.Vector3(shipBody.position.x, shipBody.position.y+3,shipBody.position.z)
+    if (activeCamera == 0) {
+      renderer.render(scene, camera[0]);
+   /*  } else if (activeCamera == 1) {
+      renderer.render(scene, camera[1]); */
+    } else if (activeCamera == 2){
+      var camPosition = new THREE.Vector3(0, -20, 20);
+      var shipPosition = camPosition.applyMatrix4(shipBody.matrixWorld);
+  
+      camera[2].position.x = shipPosition.x;
+      camera[2].position.y = shipPosition.y;
+      camera[2].position.z = shipPosition.z;
+      camera[2].lookAt(followVec);
+  
+      renderer.render(scene, camera[2]);
+    }
 }
