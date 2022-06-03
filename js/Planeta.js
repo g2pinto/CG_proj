@@ -10,16 +10,13 @@ var planet;
 var shipAux;
 var shipBody;
 
-//var limit = 50;
-
 var keyMap = [];
 
 var normal = new THREE.Vector3(0,0,0);
 
 var clock = new THREE.Clock();
 
-//var mov_speed = 5; //units a second	
-//var rot_speed = 1;
+
 var delta;
 
 const NUM_CONES = 8;
@@ -120,9 +117,11 @@ function createCube(object, raio, phi, teta, cube){
     material = new THREE.MeshBasicMaterial({color: 0xffff00, wireframe: false});
     mesh = new THREE.Mesh(geometry, material);
 
+    
     spherical.set(raio, phi, teta);
     mesh.position.setFromSpherical(spherical);
 
+    cubes[cube].add(mesh);
     object.add(mesh);
 
 }
@@ -189,6 +188,13 @@ function createShip(){
 	shipBody.add(mesh);
 
 
+    geometry = new THREE.SphereGeometry(8, 32, 16);
+    material = new THREE.MeshBasicMaterial( { color: 0x0685560, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0,0,0);
+    shipBody.add(mesh);
+
+
     spherical.set( raio, phi, teta );
     shipBody.position.setFromSpherical( spherical );
 
@@ -218,24 +224,26 @@ function createScene(){
 }
 
 
-// function checkCollision(){
+function checkCollision(){
 
-//     var trashArray = cones.concat(cubes);
+    var trashArray = cones.concat(cubes);
 
-//     var position = new THREE.Vector3();
-//     position = shipBody.position;
+    var position = new THREE.Vector3();
+    position = shipBody.position;
 
+    var position2 = new THREE.Vector3();
 
-//     for (var i = 0; trashArray.length; i++){
+    const raioEsferaLixo = Math.sqrt(3) * r/22;
 
-//         const distance = position.distanceTo(trashArray[i]);
-//         //normal.copy(shipBody.position).sub(trashArray[i].position);
+    for (var i = 0; trashArray.length; i++){
+        position2 = cones[i].position;
+        const distance = position.distanceTo(position2);
 
-//         if ( distance < trashArray[i].boundingSphere.radius + shipBody.boundingSphere.radius ){
-//             scene.remove(trashArray[i]);
-//         }
-//     }
-// }
+        if ( distance < /*trashArray[i].geometry.boundingSphere.radius*/ raioEsferaLixo + 7 ){
+            scene.remove(trashArray[i]);
+        }
+    }
+}
 
 
 
@@ -323,7 +331,7 @@ function update(){
 
     }
     if (keyMap[39]) {//right
-        console.log(sphericalAux.theta);
+        //console.log(sphericalAux.theta);
         sphericalAux.theta += Math.PI / 180;
         shipBody.position.setFromSpherical(sphericalAux);
     }
@@ -390,6 +398,8 @@ function animate() {
 
     render();
 
+    //checkCollision();
+
     requestAnimationFrame( animate );
 
 }
@@ -399,8 +409,7 @@ function render() {
     var followVec = new THREE.Vector3(shipBody.position.x, shipBody.position.y+3,shipBody.position.z)
     if (activeCamera == 0) {
       renderer.render(scene, camera[0]);
-   /*  } else if (activeCamera == 1) {
-      renderer.render(scene, camera[1]); */
+   
     }else if (activeCamera == 1){
         renderer.render(scene, camera[1]);
     
