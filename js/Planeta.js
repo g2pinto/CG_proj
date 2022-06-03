@@ -188,7 +188,7 @@ function createShip(){
 	shipBody.add(mesh);
 
 
-    geometry = new THREE.SphereGeometry(8, 32, 16);
+    geometry = new THREE.SphereGeometry(2, 32, 16);
     material = new THREE.MeshBasicMaterial( { color: 0x0685560, wireframe: true });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0,0,0);
