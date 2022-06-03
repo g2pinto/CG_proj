@@ -38,7 +38,7 @@ var aspectRatio = window.innerWidth / window.innerHeight;
 
 var r = 12;
 
-const raioEsferaLixo = Math.sqrt(3) * r/22;
+const raioEsferaLixo = r/22;
 
 function inNorthEast(object, radius){
     if (object.position.x + radius >= 0 && object.position.y + radius >= 0){
@@ -160,10 +160,10 @@ function createCube(object, raio, phi, teta, cube){
 
     
     spherical.set(raio, phi, teta);
-    mesh.position.setFromSpherical(spherical);
+    cubes[cube].position.setFromSpherical(spherical);
 
     cubes[cube].add(mesh);
-    object.add(mesh);
+    object.add(cubes[cube]);
 
 }
 
@@ -281,10 +281,10 @@ function checkCollision(semiHemisphereTrash){
         
         position2 = semiHemisphereTrash[i].position;
         var distance = position.distanceTo(position2);
-        console.log(distance);
-        if ( distance < /*trashArray[i].geometry.boundingSphere.radius*/ raioEsferaLixo + 7 ){
-            
-            scene.remove(semiHemisphereTrash[i]);
+        //console.log(distance);
+        if ( distance < /*trashArray[i].geometry.boundingSphere.radius*/ raioEsferaLixo + r/22 ){
+            semiHemisphereTrash[i].removeFromParent();
+            scene.remove( semiHemisphereTrash[i] );
         }
     }
 }
@@ -362,22 +362,24 @@ function update(){
     if (keyMap[37]) {//left
         sphericalAux.theta -= Math.PI / 180;
         shipBody.position.setFromSpherical(sphericalAux);
+        checkShipPosition();
     }
 
     if (keyMap[38]) {//up
         if(isNegativeX()){
             sphericalAux.phi -=0.5* Math.PI / 180;
             shipBody.rotateX(-0.5* Math.PI / 180);
-
         }
         else sphericalAux.phi +=0.5* Math.PI / 180;
         shipBody.position.setFromSpherical(sphericalAux);
+        checkShipPosition();
 
     }
     if (keyMap[39]) {//right
         //console.log(sphericalAux.theta);
         sphericalAux.theta += Math.PI / 180;
         shipBody.position.setFromSpherical(sphericalAux);
+        checkShipPosition();
     }
     if (keyMap[40]) {//down
          
@@ -387,6 +389,7 @@ function update(){
         }
         else sphericalAux.phi -=0.5* Math.PI / 180;
         shipBody.position.setFromSpherical(sphericalAux);
+        checkShipPosition();
     }
     
     if(keyMap[49]) { //1
