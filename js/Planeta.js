@@ -25,6 +25,10 @@ var cones = new Array(8);
 const NUM_CUBES = 12;
 var cubes = new Array(12);
 
+var trashNorhEast = new Array();
+var trashNorthWest = new Array();
+var trashSouthEast = new Array();
+var trashSouthWest = new Array();
 
 //Cameras
 var camera = new Array(3);
@@ -33,6 +37,8 @@ var activeCamera = 0;
 var aspectRatio = window.innerWidth / window.innerHeight;
 
 var r = 12;
+
+const raioEsferaLixo = Math.sqrt(3) * r/22;
 
 function inNorthEast(object, radius){
     if (object.position.x + radius >= 0 && object.position.y + radius >= 0){
@@ -63,6 +69,41 @@ function inSouthWest(object, radius){
     }
 }
 
+function divideTrash(){
+    var trashArray = cones.concat(cubes);
+    for(var i = 0; i < trashArray.length; i++) {
+        if (inNorthEast(trashArray[i], raioEsferaLixo)){
+            trashNorhEast.push(trashArray[i]);
+        }
+        else if (inNorthWest(trashArray[i], raioEsferaLixo)){
+            trashNorthWest.push(trashArray[i]);
+        }
+        else if (inSouthEast(trashArray[i], raioEsferaLixo)){
+            trashSouthEast.push(trashArray[i]);
+        }
+        else if (inSouthWest(trashArray[i], raioEsferaLixo)){
+            trashSouthWest.push(trashArray[i]);
+        }
+    }
+}
+
+
+function checkShipPosition(){
+    
+
+    if (inNorthEast(shipBody, raioEsferaLixo)){
+        checkCollision(trashNorhEast);
+    }
+    else if (inNorthWest(shipBody, raioEsferaLixo)){
+        checkCollision(trashNorthWest);
+    }
+    else if (inSouthEast(shipBody, raioEsferaLixo)){
+        checkCollision(trashSouthEast);
+    }
+    else if (inSouthWest(shipBody, raioEsferaLixo)){
+        checkCollision(trashSouthWest);
+    }
+}
 
 
 function createPlanet(){
@@ -215,32 +256,35 @@ function createScene(){
     createShip();
     createTrashCones();
     createTrashCubes();
+    divideTrash();
     
 
     for (let i = 0; i < 8; i++){
-        console.log(cones[i].position.x);
+        //console.log(cones[i].position.x);
     }
 	
 }
 
 
-function checkCollision(){
+function checkCollision(semiHemisphereTrash){
 
-    var trashArray = cones.concat(cubes);
-
+    var lixoMaximo = cubes.concat(cones);
     var position = new THREE.Vector3();
     position = shipBody.position;
 
     var position2 = new THREE.Vector3();
+    //position2 = cones[2].position;
 
-    const raioEsferaLixo = Math.sqrt(3) * r/22;
+    //const raioEsferaLixo = Math.sqrt(3) * r/22;
 
-    for (var i = 0; trashArray.length; i++){
-        position2 = cones[i].position;
-        const distance = position.distanceTo(position2);
-
+    for (var i = 0; i < semiHemisphereTrash.length; i++){
+        
+        position2 = semiHemisphereTrash[i].position;
+        var distance = position.distanceTo(position2);
+        console.log(distance);
         if ( distance < /*trashArray[i].geometry.boundingSphere.radius*/ raioEsferaLixo + 7 ){
-            scene.remove(trashArray[i]);
+            
+            scene.remove(semiHemisphereTrash[i]);
         }
     }
 }
@@ -398,7 +442,7 @@ function animate() {
 
     render();
 
-    //checkCollision();
+    checkShipPosition();
 
     requestAnimationFrame( animate );
 
