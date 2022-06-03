@@ -21,9 +21,13 @@ var delta;
 
 const NUM_CONES = 8;
 var cones = new Array(8);
+var deleted_cones = 0;
+var trash = new THREE.Object3D();
 
 const NUM_CUBES = 12;
 var cubes = new Array(12);
+var deleted_cubes = 0;
+var trashCube = new THREE.Object3D();
 
 var trashNorhEast = new Array();
 var trashNorthWest = new Array();
@@ -62,7 +66,7 @@ function inSouthEast(object, radius){
     }
 }
 function inSouthWest(object, radius){
-    if (object.position.x + radius >= 0 && object.position.y - radius <= 0){
+    if (object.position.x - radius <= 0 && object.position.y - radius <= 0){
         return true;
     } else {
         return false;
@@ -71,17 +75,18 @@ function inSouthWest(object, radius){
 
 function divideTrash(){
     var trashArray = cones.concat(cubes);
+    console.log(trashArray.length);
     for(var i = 0; i < trashArray.length; i++) {
         if (inNorthEast(trashArray[i], raioEsferaLixo)){
             trashNorhEast.push(trashArray[i]);
         }
-        else if (inNorthWest(trashArray[i], raioEsferaLixo)){
+        if (inNorthWest(trashArray[i], raioEsferaLixo)){
             trashNorthWest.push(trashArray[i]);
         }
-        else if (inSouthEast(trashArray[i], raioEsferaLixo)){
+        if (inSouthEast(trashArray[i], raioEsferaLixo)){
             trashSouthEast.push(trashArray[i]);
         }
-        else if (inSouthWest(trashArray[i], raioEsferaLixo)){
+        if (inSouthWest(trashArray[i], raioEsferaLixo)){
             trashSouthWest.push(trashArray[i]);
         }
     }
@@ -94,13 +99,13 @@ function checkShipPosition(){
     if (inNorthEast(shipBody, raioEsferaLixo)){
         checkCollision(trashNorhEast);
     }
-    else if (inNorthWest(shipBody, raioEsferaLixo)){
+    if (inNorthWest(shipBody, raioEsferaLixo)){
         checkCollision(trashNorthWest);
     }
-    else if (inSouthEast(shipBody, raioEsferaLixo)){
+    if (inSouthEast(shipBody, raioEsferaLixo)){
         checkCollision(trashSouthEast);
     }
-    else if (inSouthWest(shipBody, raioEsferaLixo)){
+    if (inSouthWest(shipBody, raioEsferaLixo)){
         checkCollision(trashSouthWest);
     }
 }
@@ -132,9 +137,11 @@ function createCone(object, raio, phi, teta, cone) {
 	
 	spherical.set( raio, phi, teta );
     cones[cone].position.setFromSpherical( spherical );
+    cones[cone].name = "cone";
 		
 	cones[cone].add(mesh);
-    object.add(cones[cone]);
+    //object.add(cones[cone]);
+    scene.add(cones[cone]);
 }
 
 function createTrashCones() {
@@ -147,7 +154,7 @@ function createTrashCones() {
     }
 
 	
-	scene.add(trash);
+	//scene.add(trash);
 }
 
 function createCube(object, raio, phi, teta, cube){
@@ -161,14 +168,16 @@ function createCube(object, raio, phi, teta, cube){
     
     spherical.set(raio, phi, teta);
     cubes[cube].position.setFromSpherical(spherical);
+    cubes[cube].name = "cube";
 
     cubes[cube].add(mesh);
-    object.add(cubes[cube]);
+    //object.add(cubes[cube]);
+    scene.add(cubes[cube]);
 
 }
 
 function createTrashCubes(){
-    var trashCube = new THREE.Object3D();
+    
     for(let i = 0; i < NUM_CUBES; i++){
         var phi = Math.random()*Math.PI;
         var teta = Math.random()*2*Math.PI;
@@ -177,7 +186,7 @@ function createTrashCubes(){
         createCube(trashCube, raio, phi, teta, i);
     }
 
-    scene.add(trashCube);
+    //scene.add(trashCube);
 }
 
 
@@ -257,32 +266,29 @@ function createScene(){
     createTrashCones();
     createTrashCubes();
     divideTrash();
-    
 
-    for (let i = 0; i < 8; i++){
-        //console.log(cones[i].position.x);
-    }
 	
 }
 
 
 function checkCollision(semiHemisphereTrash){
 
+    var spherical = new THREE.Spherical();
+    spherical.set(0, 0, 0);
+
     var lixoMaximo = cubes.concat(cones);
     var position = new THREE.Vector3();
     position = shipBody.position;
 
     var position2 = new THREE.Vector3();
-    //position2 = cones[2].position;
-
-    //const raioEsferaLixo = Math.sqrt(3) * r/22;
 
     for (var i = 0; i < semiHemisphereTrash.length; i++){
+        //console.log(semiHemisphereTrash[i].name);
         
         position2 = semiHemisphereTrash[i].position;
         var distance = position.distanceTo(position2);
-        //console.log(distance);
-        if ( distance < /*trashArray[i].geometry.boundingSphere.radius*/ raioEsferaLixo + r/22 ){
+        if ( distance <  raioEsferaLixo + r/22 ){
+            semiHemisphereTrash[i].position.setFromSpherical(spherical);
             semiHemisphereTrash[i].removeFromParent();
             scene.remove( semiHemisphereTrash[i] );
         }
@@ -362,7 +368,7 @@ function update(){
     if (keyMap[37]) {//left
         sphericalAux.theta -= Math.PI / 180;
         shipBody.position.setFromSpherical(sphericalAux);
-        checkShipPosition();
+        //checkShipPosition();
     }
 
     if (keyMap[38]) {//up
@@ -372,14 +378,14 @@ function update(){
         }
         else sphericalAux.phi +=0.5* Math.PI / 180;
         shipBody.position.setFromSpherical(sphericalAux);
-        checkShipPosition();
+        //checkShipPosition();
 
     }
     if (keyMap[39]) {//right
         //console.log(sphericalAux.theta);
         sphericalAux.theta += Math.PI / 180;
         shipBody.position.setFromSpherical(sphericalAux);
-        checkShipPosition();
+        //checkShipPosition();
     }
     if (keyMap[40]) {//down
          
@@ -389,7 +395,7 @@ function update(){
         }
         else sphericalAux.phi -=0.5* Math.PI / 180;
         shipBody.position.setFromSpherical(sphericalAux);
-        checkShipPosition();
+        //checkShipPosition();
     }
     
     if(keyMap[49]) { //1
