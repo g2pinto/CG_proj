@@ -173,6 +173,10 @@ function createScene(){
     createPlanet();
     createShip();
     createTrashCones();
+
+    for (let i = 0; i < 8; i++){
+        console.log(cones[i].position.x);
+    }
 	
 }
 
