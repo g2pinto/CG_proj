@@ -458,7 +458,6 @@ function animate() {
 }
 
 function render() {
-    "use strict";
     var followVec = new THREE.Vector3(shipBody.position.x, shipBody.position.y+3,shipBody.position.z)
     if (activeCamera == 0) {
       renderer.render(scene, camera[0]);
