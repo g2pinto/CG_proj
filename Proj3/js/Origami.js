@@ -22,6 +22,7 @@ var activeCamera = 0;
 
 var delta;
 var origami1;
+var origami2;
 
 function createFirstOrigami(){
     origami1 = new THREE.Object3D();
@@ -29,9 +30,9 @@ function createFirstOrigami(){
     // create a simple square shape. We duplicate the top left and bottom right
     // vertices because each vertex needs to appear once per triangle.
     const vertices = new Float32Array( [
-        -14.82, 14.845,  1,
+        4*14**0.5, 15,  1,
         0,0,0,
-        0,29.69,0
+        0,30,0
     ] );
 
     // itemSize = 3 because there are 3 values (components) per vertex
@@ -43,25 +44,79 @@ function createFirstOrigami(){
     origami1.add(mesh);
     //scene.add(mesh);
 
+    origami2 = origami1.clone()
+    origami2.rotateY(Math.PI)
+    origami1.add(origami2)
+
+    origami1.position.set(-40, 0, 0);
+
+    scene.add(origami1);
+
+
+}
+
+function createSecondOrigami(){
+    origami1 = new THREE.Object3D();
+    const geometry = new THREE.BufferGeometry();
+    // create a simple square shape. We duplicate the top left and bottom right
+    // vertices because each vertex needs to appear once per triangle.
+    const vertices = new Float32Array( [
+        0,15*2**0.5,0,
+        0,0,0,
+        4.21,21.21,0.28
+    ] );
+
+    // itemSize = 3 because there are 3 values (components) per vertex
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+    const mesh = new THREE.Mesh( geometry, material );
+    origami1.add(mesh);
+
     const geometry1 = new THREE.BufferGeometry();
     // create a simple square shape. We duplicate the top left and bottom right
     // vertices because each vertex needs to appear once per triangle.
     const vertices1 = new Float32Array( [
-        14.82, 14.845,  1,
-        0,29.69,0,
+        0,30,0,
         0,0,0,
+        4.97,25.02,0.33
     ] );
 
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry1.setAttribute( 'position', new THREE.BufferAttribute( vertices1, 3 ) );
-    const material1 = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe:      true } );
+    const material1 = new THREE.MeshBasicMaterial( { color: 0xfff000, wireframe: true } );
     const mesh1 = new THREE.Mesh( geometry1, material1 );
-    //geom.faces.push(new THREE.Face3(0, 1, 2, normal));
-    //scene.add(mesh1);
     origami1.add(mesh1);
 
-    origami1.position.set(-4, 0, 0);
+    const geometry2 = new THREE.BufferGeometry();
+    // create a simple square shape. We duplicate the top left and bottom right
+    // vertices because each vertex needs to appear once per triangle.
+    const vertices2 = new Float32Array( [
+        4.97,25.02,0.33,
+        0,0,0,
+        0,22.96,0
+    ] );
 
+    // itemSize = 3 because there are 3 values (components) per vertex
+    geometry2.setAttribute( 'position', new THREE.BufferAttribute( vertices2, 3 ) );
+    const material2 = new THREE.MeshBasicMaterial( { color: 0x5fff00, wireframe: true } );
+    const mesh2 = new THREE.Mesh( geometry2, material2 );
+    origami1.add(mesh2);
+
+
+    const geometry3 = new THREE.BufferGeometry();
+    const vertices3 = new Float32Array( [
+        0,22.96,0,
+        0,0,0,
+        4.21,21.21,0.28
+    ] );
+
+    geometry3.setAttribute( 'position', new THREE.BufferAttribute( vertices3, 3 ) );
+    const material3 = new THREE.MeshBasicMaterial( { color: 0x5fff00, wireframe: true } );
+    const mesh3 = new THREE.Mesh( geometry3, material3 );
+    origami1.add(mesh3);
+    origami2 = origami1.clone()
+    origami2.rotateY(Math.PI)
+    origami1.add(origami2)
     scene.add(origami1);
 
 }
@@ -74,7 +129,7 @@ function createScene(){
 	
 	scene.add(new THREE.AxisHelper(10));
     createFirstOrigami();
-    
+    createSecondOrigami();
 
 	
 }
