@@ -27,13 +27,16 @@ var origami11;
 var origami20;
 var origami21;
 
+var material = [], material1 = [];
+var material2 = [], material3 = [];
+
 function createFirstOrigami(){
     origami10 = new THREE.Object3D();
     const geometry = new THREE.BufferGeometry();
     // create a simple square shape. We duplicate the top left and bottom right
     // vertices because each vertex needs to appear once per triangle.
     const vertices = new Float32Array( [
-        4*14**0.5, 15,  1,
+        5*5**0.5, 15,  10,
         0,0,0,
         0,30,0
     ] );
@@ -71,8 +74,9 @@ function createSecondOrigami(){
 
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
-    const mesh = new THREE.Mesh( geometry, material );
+    material[0] = new THREE.MeshPhongMaterial({ color: 0xff0000, wireframe: false, specular: 0xffffff, shininess: 60 });
+	material[1] = new THREE.MeshLambertMaterial({ color: 0xff0000, wireframe: false });
+	const mesh = new THREE.Mesh( geometry, material[1] );
     origami20.add(mesh);
 
     const geometry1 = new THREE.BufferGeometry();
@@ -85,9 +89,11 @@ function createSecondOrigami(){
     ] );
 
     // itemSize = 3 because there are 3 values (components) per vertex
+    
     geometry1.setAttribute( 'position', new THREE.BufferAttribute( vertices1, 3 ) );
-    const material1 = new THREE.MeshBasicMaterial( { color: 0xfff000, wireframe: true } );
-    const mesh1 = new THREE.Mesh( geometry1, material1 );
+    material1[0] = new THREE.MeshPhongMaterial({ color: 0xfff000, wireframe: false, specular: 0xffffff, shininess: 60 });
+	material1[1] = new THREE.MeshLambertMaterial({ color: 0xfff000, wireframe: false });
+    const mesh1 = new THREE.Mesh( geometry1, material1[1] );
     origami20.add(mesh1);
 
     const geometry2 = new THREE.BufferGeometry();
@@ -102,7 +108,9 @@ function createSecondOrigami(){
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry2.setAttribute( 'position', new THREE.BufferAttribute( vertices2, 3 ) );
     const material2 = new THREE.MeshBasicMaterial( { color: 0x5fff00, wireframe: true } );
-    const mesh2 = new THREE.Mesh( geometry2, material2 );
+    material2[0] = new THREE.MeshPhongMaterial({ color: 0x5fff00, wireframe: false, specular: 0xffffff, shininess: 60 });
+	material2[1] = new THREE.MeshLambertMaterial({ color: 0x5fff00, wireframe: false });
+    const mesh2 = new THREE.Mesh( geometry2, material2[1] );
     origami20.add(mesh2);
 
 
@@ -115,11 +123,13 @@ function createSecondOrigami(){
 
     geometry3.setAttribute( 'position', new THREE.BufferAttribute( vertices3, 3 ) );
     const material3 = new THREE.MeshBasicMaterial( { color: 0x3333ff, wireframe: true } );
-    const mesh3 = new THREE.Mesh( geometry3, material3 );
+    material3[0] = new THREE.MeshPhongMaterial({ color: 0x3333ff, wireframe: false, specular: 0xffffff, shininess: 60 });
+	material3[1] = new THREE.MeshLambertMaterial({ color: 0x3333ff, wireframe: false });
+    const mesh3 = new THREE.Mesh( geometry3, material3[1] );
     origami20.add(mesh3);
-    origami21 = origami20.clone()
+    /* origami21 = origami20.clone()
     origami21.rotateY(Math.PI)
-    origami20.add(origami21)
+    origami20.add(origami21) */
     scene.add(origami20);
 
 }
