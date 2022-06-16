@@ -24,6 +24,7 @@ var delta;
 var origami1;
 var origami10;
 var origami11 = new THREE.Object3D();
+var directionalLight;
 
 var origami20;
 var origami21;
@@ -138,14 +139,9 @@ function createSecondOrigami(){
 }
 
 function createDirectionalLight(){
-    const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-    directionalLight.position.set( 10, 10, 10 ); //default; light shining from top
-    directionalLight.castShadow = true; // default false
-
-    directionalLight.shadow.mapSize.width = 512; // default
-    directionalLight.shadow.mapSize.height = 512; // default
-    directionalLight.shadow.camera.near = 0.5; // default
-    directionalLight.shadow.camera.far = 500; // default
+    directionalLight = new THREE.DirectionalLight(0xffffff);
+	directionalLight.position.set(0, 100, 0);
+	directionalLight.castShadow = true;
     scene.add( directionalLight );
 }
 
@@ -156,7 +152,7 @@ function createScene(){
 	scene = new THREE.Scene();
 	
 	scene.add(new THREE.AxesHelper(10));
-    createFloor();
+    //createFloor();
     createFirstOrigami();
     createSecondOrigami();
     createDirectionalLight();
