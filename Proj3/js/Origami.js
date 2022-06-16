@@ -45,6 +45,7 @@ function createFloor(){
 	scene.add( floor );
 }
 
+var floor, podium;
 
 function createFirstOrigami(){
     origami10 = new THREE.Object3D();
@@ -74,8 +75,7 @@ function createFirstOrigami(){
     //origami11.mesh = new THREE.Mesh( geometry,new THREE.MeshBasicMaterial( { color: 0xffff00, wireframe: false, side: THREE.DoubleSide } ))
     origami10.add(origami11);
 
-    origami10.position.set(-40, 0, 0);
-    //console.log(origami11.position);
+    origami10.position.set(-40, 5, 0);
 
     scene.add(origami10);
     //scene.add(origami11);
@@ -157,9 +157,11 @@ function createSecondOrigami(){
     const mesh3 = new THREE.Mesh( geometry3, material3[1] );
 
     origami20.add(mesh3);
-    origami21 = origami20.clone()
-    origami21.rotateY(Math.PI)
-    origami20.add(origami21) 
+    origami21 = origami20.clone();
+    origami21.rotateY(Math.PI);
+    origami20.add(origami21);
+
+    origami20.position.set(0, 5, 0);
     scene.add(origami20);
 
 }
@@ -171,7 +173,50 @@ function createDirectionalLight(){
     scene.add( directionalLight );
 }
 
+function createFloor(){
+    floor = new THREE.Object3D();
 
+    geometry = new THREE.PlaneGeometry(1000, 1000);
+    material = new THREE.MeshBasicMaterial ({ color: 0x964B00, wireframe: false });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.material.side = THREE.DoubleSide;
+
+    floor.add(mesh);
+    floor.rotateX(-Math.PI/2);
+    scene.add(floor);
+}
+
+
+function createPodium(){
+    podium = new THREE.Object3D();
+
+    geometry = new THREE.BoxGeometry(120, 6, 15);
+    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    podium.add(mesh);
+
+
+    geometry = new THREE.BoxGeometry(5, 4, 3);
+    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0,-1, 9);
+
+    podium.add(mesh);
+
+    geometry = new THREE.BoxGeometry(5, 2, 3);
+    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, -2, 12);
+
+    podium.add(mesh);
+
+    podium.position.set(0,0,0);
+
+    scene.add(podium);
+    
+
+}
 
 function createScene(){
 	
@@ -182,12 +227,18 @@ function createScene(){
     createFirstOrigami();
     createSecondOrigami();
     createDirectionalLight();
+    createFloor();
+    createPodium();
     //createPauseSign();
 
 	
 }
 
 function createPauseScene(){
+
+    //createFloor();
+    //createPodium();
+
 	
 	pauseScene = new THREE.Scene();
 	
@@ -223,16 +274,14 @@ function createPauseCamera() {
 
 function createFrontalCamera() {
 
-    camera[0] = new THREE.OrthographicCamera(-60, 60, 30, -30, 0.1, 10000);
+    camera[0] = new THREE.OrthographicCamera(-70, 70, 45, -45, 0.1, 10000);
 
     camera[0].lookAt(scene.position);
     camera[0].position.x = 0;
     camera[0].position.y = 0;
-    camera[0].position.z = 70;
+    camera[0].position.z = 100;
 
 }
-
-
 
 
 function onDocumentKeyDown(event){
@@ -302,9 +351,16 @@ function update(){
 
 function createCameras(){
 	
-	createFrontalCamera();
+	createFrontalCamera();  
 
 }
+
+function initializeVR(){
+    document.body.appendChild( VRButton.createButton (renderer));
+    var vrCamera = new THREE.StereoCamera();
+    renderer.setAnimationLoop(scene, vrCamera );
+}
+
 
 function init() {
 
@@ -312,10 +368,14 @@ function init() {
         antialias: true
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.xr.enabled = true;
+
     document.body.appendChild(renderer.domElement);
 
     createScene();
     createCameras();
+    initializeVR();
+    
 
     document.addEventListener("keydown", onDocumentKeyDown, true);
     document.addEventListener("keyup", onDocumentKeyUp, true);
