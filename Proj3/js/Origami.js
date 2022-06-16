@@ -4,6 +4,9 @@
 'use strict';
 var controls;
 
+var spotLightHF1, spotLightHF2, spotLightHF3;
+
+
 var scene, renderer;
 var pauseScene, pauseCamera;
 var ispause = false;
@@ -36,13 +39,20 @@ var origami21;
 var material = [], material1 = [];
 var material2 = [], material3 = [];
 
+var floor;
+
 function createFloor(){
-    var geometry = new THREE.PlaneGeometry( 120, 120, 1, 1 );
+    floor = new THREE.Object3D();
+
+    var geometry = new THREE.BoxGeometry(90,5,90);
 	var material = new THREE.MeshBasicMaterial( { color: 0x964B00} );
-	var floor = new THREE.Mesh( geometry, material );
-	floor.material.side = THREE.DoubleSide;
-	floor.rotation.x = 90;
+
 	scene.add( floor );
+
+    var meshBoard = new THREE.Mesh(geometry, material);
+    floor.add(meshBoard);
+    floor.position.set(0,0,0)
+    scene.add(floor)
 }
 
 
@@ -172,6 +182,37 @@ function createDirectionalLight(){
 }
 
 
+function createHolofoteLight() {
+
+	spotLightHF1 = new THREE.SpotLight(0xffffff, 5, 50, Math.PI / 50);
+	spotLightHF2 = new THREE.SpotLight(0xffffff, 5, 50, Math.PI / 10);
+	//spotLightHF3 = new THREE.SpotLight(0xffffff, 5, 50, Math.PI / 10); */
+
+	spotLightHF1.position.set(0,0,10);
+	 spotLightHF2.position.set(0, 0,10);
+	//spotLightHF3.position.set(0, 45, -20); */
+
+	spotLightHF1.target.position.set(0,0, 0);
+	 spotLightHF2.target.position.set(0, 0, 0);
+	//spotLightHF3.target.position.set(0, 10, 0); */
+
+	spotLightHF1.castShadow = true;
+	 spotLightHF2.castShadow = true;
+	//spotLightHF3.castShadow = true; */
+
+	origami20.add(spotLightHF1.target);
+	//origami10.add(spotLightHF2.target);
+	//board.add(spotLightHF3.target); */
+
+	origami20.add(spotLightHF1);
+
+    spotLightHF1.intensity = 5;
+	//origami10.add(spotLightHF2);
+	//board.add(spotLightHF3); */
+
+}
+
+
 
 function createScene(){
 	
@@ -182,6 +223,7 @@ function createScene(){
     createFirstOrigami();
     createSecondOrigami();
     createDirectionalLight();
+    createHolofoteLight();
     //createPauseSign();
 
 	
@@ -195,6 +237,7 @@ function createPauseScene(){
     //createFloor();
     createPauseCamera();
     createPauseSign();
+    createHolofoteLight();
 
 	
 }
@@ -316,6 +359,7 @@ function init() {
 
     createScene();
     createCameras();
+    
 
     document.addEventListener("keydown", onDocumentKeyDown, true);
     document.addEventListener("keyup", onDocumentKeyUp, true);
