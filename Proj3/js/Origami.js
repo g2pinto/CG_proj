@@ -36,14 +36,7 @@ var origami21;
 var material = [], material1 = [];
 var material2 = [], material3 = [];
 
-function createFloor(){
-    var geometry = new THREE.PlaneGeometry( 120, 120, 1, 1 );
-	var material = new THREE.MeshBasicMaterial( { color: 0x964B00} );
-	var floor = new THREE.Mesh( geometry, material );
-	floor.material.side = THREE.DoubleSide;
-	floor.rotation.x = 90;
-	scene.add( floor );
-}
+
 
 var floor, podium;
 
