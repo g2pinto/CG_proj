@@ -21,11 +21,23 @@ var activeCamera = 0;
 
 
 var delta;
+var origami1;
 var origami10;
-var origami11;
+var origami11 = new THREE.Object3D();
 
 var origami20;
 var origami21;
+
+
+function createFloor(){
+    var geometry = new THREE.PlaneGeometry( 120, 120, 1, 1 );
+	var material = new THREE.MeshBasicMaterial( { color: 0x964B00} );
+	var floor = new THREE.Mesh( geometry, material );
+	floor.material.side = THREE.DoubleSide;
+	floor.rotation.x = 90;
+	scene.add( floor );
+}
+
 
 function createFirstOrigami(){
     origami10 = new THREE.Object3D();
@@ -34,26 +46,27 @@ function createFirstOrigami(){
     // vertices because each vertex needs to appear once per triangle.
     const vertices = new Float32Array( [
         4*14**0.5, 15,  1,
-        0,0,0,
-        0,30,0
+        0,30,0,
+        0,0,0
     ] );
 
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe:      true } );
+    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: false, side: THREE.DoubleSide } );
     const mesh = new THREE.Mesh( geometry, material );
     //geom.faces.push(new THREE.Face3(0, 1, 2, normal));
 
     origami10.add(mesh);
-    //scene.add(mesh);
 
-    origami11 = origami10.clone()
-    origami11.rotateY(Math.PI)
-    origami10.add(origami11)
+    origami11 = origami10.clone(true);
+    origami11.rotateY(Math.PI);
+    origami10.add(origami11);
 
     origami10.position.set(-40, 0, 0);
+    //console.log(origami11.position);
 
     scene.add(origami10);
+    //scene.add(origami11);
 
 
 }
@@ -71,7 +84,7 @@ function createSecondOrigami(){
 
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true, side: THREE.DoubleSide  } );
     const mesh = new THREE.Mesh( geometry, material );
     origami20.add(mesh);
 
@@ -86,7 +99,7 @@ function createSecondOrigami(){
 
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry1.setAttribute( 'position', new THREE.BufferAttribute( vertices1, 3 ) );
-    const material1 = new THREE.MeshBasicMaterial( { color: 0xfff000, wireframe: true } );
+    const material1 = new THREE.MeshBasicMaterial( { color: 0xfff000, wireframe: true, side: THREE.DoubleSide  } );
     const mesh1 = new THREE.Mesh( geometry1, material1 );
     origami20.add(mesh1);
 
@@ -101,7 +114,7 @@ function createSecondOrigami(){
 
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry2.setAttribute( 'position', new THREE.BufferAttribute( vertices2, 3 ) );
-    const material2 = new THREE.MeshBasicMaterial( { color: 0x5fff00, wireframe: true } );
+    const material2 = new THREE.MeshBasicMaterial( { color: 0x5fff00, wireframe: true, side: THREE.DoubleSide  } );
     const mesh2 = new THREE.Mesh( geometry2, material2 );
     origami20.add(mesh2);
 
@@ -114,7 +127,7 @@ function createSecondOrigami(){
     ] );
 
     geometry3.setAttribute( 'position', new THREE.BufferAttribute( vertices3, 3 ) );
-    const material3 = new THREE.MeshBasicMaterial( { color: 0x3333ff, wireframe: true } );
+    const material3 = new THREE.MeshBasicMaterial( { color: 0x3333ff, wireframe: true, side: THREE.DoubleSide  } );
     const mesh3 = new THREE.Mesh( geometry3, material3 );
     origami20.add(mesh3);
     origami21 = origami20.clone()
@@ -124,15 +137,29 @@ function createSecondOrigami(){
 
 }
 
+function createDirectionalLight(){
+    const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+    directionalLight.position.set( 10, 10, 10 ); //default; light shining from top
+    directionalLight.castShadow = true; // default false
+
+    directionalLight.shadow.mapSize.width = 512; // default
+    directionalLight.shadow.mapSize.height = 512; // default
+    directionalLight.shadow.camera.near = 0.5; // default
+    directionalLight.shadow.camera.far = 500; // default
+    scene.add( directionalLight );
+}
+
 
 
 function createScene(){
 	
 	scene = new THREE.Scene();
 	
-	scene.add(new THREE.AxisHelper(10));
+	scene.add(new THREE.AxesHelper(10));
+    createFloor();
     createFirstOrigami();
     createSecondOrigami();
+    createDirectionalLight();
 
 	
 }
@@ -143,6 +170,7 @@ function createFrontalCamera() {
     camera[0] = new THREE.OrthographicCamera(-60, 60, 30, -30, 0.1, 10000);
 
     camera[0].lookAt(scene.position);
+    camera[0].position.x = 0;
     camera[0].position.y = 0;
     camera[0].position.z = 70;
 
