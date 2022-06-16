@@ -158,7 +158,7 @@ function createSecondOrigami(){
 
     origami20.add(mesh3);
     origami21 = origami20.clone()
-    origami21.rotateY(Math.PI)
+    origami21.rotateY(6*Math.PI/5);
     origami20.add(origami21) 
     scene.add(origami20);
 
@@ -166,8 +166,8 @@ function createSecondOrigami(){
 
 function createDirectionalLight(){
     var directionalLight = new THREE.DirectionalLight(0xffffff);
-    directionalLight.position.set(-40, 0, 100);
-    //directionalLight.castShadow = true;
+    directionalLight.position.set(0, 100, 50);
+    directionalLight.castShadow = true;
     scene.add( directionalLight );
 }
 
@@ -182,7 +182,7 @@ function createScene(){
     createFirstOrigami();
     createSecondOrigami();
     createDirectionalLight();
-    //createPauseSign();
+    createPauseSign();
 
 	
 }
@@ -201,8 +201,8 @@ function createPauseScene(){
 
 function createPauseSign(){
     var geometry = new THREE.PlaneGeometry( 40, 20, 1, 1 );
-    const texture = new THREE.TextureLoader().load( 'textures/pause.png' );
-	var material = new THREE.MeshPhongMaterial( { map: texture } );
+    const texture = new THREE.TextureLoader().load( "js/textures/pause.jpg" );
+	var material = new THREE.MeshBasicMaterial( { map: texture } );
 	var sign = new THREE.Mesh( geometry, material );
 	//sign.material.side = THREE.DoubleSide;
     sign.position.z = 10
@@ -272,18 +272,18 @@ function update(){
     
 	
     if (keyMap[69]) { // second origami left E(e)
-        origami20.rotateY(-Math.PI/180)
+        origami20.rotateY(-Math.PI/180*delta*50)
     }
 
     if (keyMap[82]) {//second origami right R(r)
-        origami20.rotateY(Math.PI/180)
+        origami20.rotateY(Math.PI/180*delta*50)
 
     }
     if (keyMap[81]) {//first origami left Q(q)
-        origami10.rotateY(-Math.PI/180)
+        origami10.rotateY(-Math.PI/180*delta*50)
     }
     if (keyMap[87]) {//first origami right W(w)
-        origami10.rotateY(Math.PI/180)
+        origami10.rotateY(Math.PI/180*delta*50)
     }
     
     if(keyMap[49]) { //1
@@ -294,6 +294,12 @@ function update(){
     if(keyMap[51]) { //3
     }
     if(keyMap[32]){
+        if (ispause){
+            clock.start();
+        } else{
+            clock.stop();
+        }
+        console.log("hello");
         ispause = !ispause;
     }
 
@@ -364,8 +370,8 @@ function render() {
     if (activeCamera == 0) {
         renderer.render(scene, camera[0]);
     }
-    if (ispause){
-      renderer.clearDepth();
-      renderer.render(pauseScene, pauseCamera);
-    }
+    //if (ispause){
+    //  renderer.clearDepth();
+    //  renderer.render(pauseScene, pauseCamera);
+    //}
 }
