@@ -21,14 +21,25 @@ var activeCamera = 0;
 
 
 var delta;
+var origami1;
 var origami10;
-var origami11;
+var origami11 = new THREE.Object3D();
 
 var origami20;
 var origami21;
 
 var material = [], material1 = [];
 var material2 = [], material3 = [];
+
+function createFloor(){
+    var geometry = new THREE.PlaneGeometry( 120, 120, 1, 1 );
+	var material = new THREE.MeshBasicMaterial( { color: 0x964B00} );
+	var floor = new THREE.Mesh( geometry, material );
+	floor.material.side = THREE.DoubleSide;
+	floor.rotation.x = 90;
+	scene.add( floor );
+}
+
 
 function createFirstOrigami(){
     origami10 = new THREE.Object3D();
@@ -39,24 +50,26 @@ function createFirstOrigami(){
         5*5**0.5, 15,  10,
         0,0,0,
         0,30,0
+
     ] );
 
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe:      true } );
+    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: false, side: THREE.DoubleSide } );
     const mesh = new THREE.Mesh( geometry, material );
     //geom.faces.push(new THREE.Face3(0, 1, 2, normal));
 
     origami10.add(mesh);
-    //scene.add(mesh);
 
-    origami11 = origami10.clone()
-    origami11.rotateY(Math.PI)
-    origami10.add(origami11)
+    origami11 = origami10.clone(true);
+    origami11.rotateY(Math.PI);
+    origami10.add(origami11);
 
     origami10.position.set(-40, 0, 0);
+    //console.log(origami11.position);
 
     scene.add(origami10);
+    //scene.add(origami11);
 
 
 }
@@ -77,6 +90,7 @@ function createSecondOrigami(){
     material[0] = new THREE.MeshPhongMaterial({ color: 0xff0000, wireframe: false, specular: 0xffffff, shininess: 60 });
 	material[1] = new THREE.MeshLambertMaterial({ color: 0xff0000, wireframe: false });
 	const mesh = new THREE.Mesh( geometry, material[1] );
+
     origami20.add(mesh);
 
     const geometry1 = new THREE.BufferGeometry();
@@ -94,6 +108,7 @@ function createSecondOrigami(){
     material1[0] = new THREE.MeshPhongMaterial({ color: 0xfff000, wireframe: false, specular: 0xffffff, shininess: 60 });
 	material1[1] = new THREE.MeshLambertMaterial({ color: 0xfff000, wireframe: false });
     const mesh1 = new THREE.Mesh( geometry1, material1[1] );
+
     origami20.add(mesh1);
 
     const geometry2 = new THREE.BufferGeometry();
@@ -111,6 +126,7 @@ function createSecondOrigami(){
     material2[0] = new THREE.MeshPhongMaterial({ color: 0x5fff00, wireframe: false, specular: 0xffffff, shininess: 60 });
 	material2[1] = new THREE.MeshLambertMaterial({ color: 0x5fff00, wireframe: false });
     const mesh2 = new THREE.Mesh( geometry2, material2[1] );
+
     origami20.add(mesh2);
 
 
@@ -126,6 +142,7 @@ function createSecondOrigami(){
     material3[0] = new THREE.MeshPhongMaterial({ color: 0x3333ff, wireframe: false, specular: 0xffffff, shininess: 60 });
 	material3[1] = new THREE.MeshLambertMaterial({ color: 0x3333ff, wireframe: false });
     const mesh3 = new THREE.Mesh( geometry3, material3[1] );
+
     origami20.add(mesh3);
     /* origami21 = origami20.clone()
     origami21.rotateY(Math.PI)
@@ -134,15 +151,29 @@ function createSecondOrigami(){
 
 }
 
+function createDirectionalLight(){
+    const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+    directionalLight.position.set( 10, 10, 10 ); //default; light shining from top
+    directionalLight.castShadow = true; // default false
+
+    directionalLight.shadow.mapSize.width = 512; // default
+    directionalLight.shadow.mapSize.height = 512; // default
+    directionalLight.shadow.camera.near = 0.5; // default
+    directionalLight.shadow.camera.far = 500; // default
+    scene.add( directionalLight );
+}
+
 
 
 function createScene(){
 	
 	scene = new THREE.Scene();
 	
-	scene.add(new THREE.AxisHelper(10));
+	scene.add(new THREE.AxesHelper(10));
+    createFloor();
     createFirstOrigami();
     createSecondOrigami();
+    createDirectionalLight();
 
 	
 }
@@ -153,6 +184,7 @@ function createFrontalCamera() {
     camera[0] = new THREE.OrthographicCamera(-60, 60, 30, -30, 0.1, 10000);
 
     camera[0].lookAt(scene.position);
+    camera[0].position.x = 0;
     camera[0].position.y = 0;
     camera[0].position.z = 70;
 
