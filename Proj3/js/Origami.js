@@ -1,8 +1,12 @@
 /*global THREE, requestAnimationFrame, console*/
+
+
 'use strict';
 var controls;
 
 var scene, renderer;
+var pauseScene, pauseCamera;
+var ispause = false;
 
 var geometry, material, mesh;
 
@@ -56,16 +60,18 @@ function createFirstOrigami(){
 
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    geometry.computeVertexNormals();
     material[0] = new THREE.MeshPhongMaterial({ color: 0xff0000, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 });
 	material[1] = new THREE.MeshLambertMaterial({ color: 0xff0000, wireframe: false, side: THREE.DoubleSide });
     const mesh = new THREE.Mesh( geometry, material[1] );
+    
     //geom.faces.push(new THREE.Face3(0, 1, 2, normal));
 
     origami10.add(mesh);
 
     origami11 = origami10.clone(true);
-    origami11.rotateY(Math.PI);
-    origami11.mesh = new THREE.Mesh( geometry,new THREE.MeshBasicMaterial( { color: 0xffff00, wireframe: false, side: THREE.DoubleSide } ))
+    origami11.rotateY(6*Math.PI/5);
+    //origami11.mesh = new THREE.Mesh( geometry,new THREE.MeshBasicMaterial( { color: 0xffff00, wireframe: false, side: THREE.DoubleSide } ))
     origami10.add(origami11);
 
     origami10.position.set(-40, 0, 0);
@@ -90,6 +96,7 @@ function createSecondOrigami(){
 
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    geometry.computeVertexNormals();
     material[0] = new THREE.MeshPhongMaterial({ color: 0xff0000, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 });
 	material[1] = new THREE.MeshLambertMaterial({ color: 0xff0000, wireframe: false, side: THREE.DoubleSide });
 	const mesh = new THREE.Mesh( geometry, material[1] );
@@ -108,6 +115,7 @@ function createSecondOrigami(){
     // itemSize = 3 because there are 3 values (components) per vertex
     
     geometry1.setAttribute( 'position', new THREE.BufferAttribute( vertices1, 3 ) );
+    geometry1.computeVertexNormals();
     material1[0] = new THREE.MeshPhongMaterial({ color: 0xfff000, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 });
 	material1[1] = new THREE.MeshLambertMaterial({ color: 0xfff000, wireframe: false, side: THREE.DoubleSide });
     const mesh1 = new THREE.Mesh( geometry1, material1[1] );
@@ -125,6 +133,7 @@ function createSecondOrigami(){
 
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry2.setAttribute( 'position', new THREE.BufferAttribute( vertices2, 3 ) );
+    geometry2.computeVertexNormals();
     const material2 = new THREE.MeshBasicMaterial( { color: 0x5fff00, wireframe: true } );
     material2[0] = new THREE.MeshPhongMaterial({ color: 0x5fff00, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 });
 	material2[1] = new THREE.MeshLambertMaterial({ color: 0x5fff00, wireframe: false, side: THREE.DoubleSide });
@@ -141,6 +150,7 @@ function createSecondOrigami(){
     ] );
 
     geometry3.setAttribute( 'position', new THREE.BufferAttribute( vertices3, 3 ) );
+    geometry3.computeVertexNormals();
     const material3 = new THREE.MeshBasicMaterial( { color: 0x3333ff, wireframe: true } );
     material3[0] = new THREE.MeshPhongMaterial({ color: 0x3333ff, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 });
 	material3[1] = new THREE.MeshLambertMaterial({ color: 0x3333ff, wireframe: false, side: THREE.DoubleSide });
@@ -156,8 +166,8 @@ function createSecondOrigami(){
 
 function createDirectionalLight(){
     var directionalLight = new THREE.DirectionalLight(0xffffff);
-    directionalLight.position.set(0, 100, 0);
-    directionalLight.castShadow = true;
+    directionalLight.position.set(-40, 0, 100);
+    //directionalLight.castShadow = true;
     scene.add( directionalLight );
 }
 
@@ -168,12 +178,46 @@ function createScene(){
 	scene = new THREE.Scene();
 	
 	scene.add(new THREE.AxesHelper(10));
-    //createFloor();
+    createFloor();
     createFirstOrigami();
     createSecondOrigami();
     createDirectionalLight();
+    //createPauseSign();
 
 	
+}
+
+function createPauseScene(){
+	
+	pauseScene = new THREE.Scene();
+	
+	scene.add(new THREE.AxesHelper(10));
+    //createFloor();
+    createPauseCamera();
+    createPauseSign();
+
+	
+}
+
+function createPauseSign(){
+    var geometry = new THREE.PlaneGeometry( 40, 20, 1, 1 );
+    const texture = new THREE.TextureLoader().load( 'textures/pause.png' );
+	var material = new THREE.MeshPhongMaterial( { map: texture } );
+	var sign = new THREE.Mesh( geometry, material );
+	//sign.material.side = THREE.DoubleSide;
+    sign.position.z = 10
+	scene.add( sign );
+}
+
+function createPauseCamera() {
+
+    pauseCamera = new THREE.OrthographicCamera(-60, 60, 30, -30, 0.1, 10000);
+
+    pauseCamera.lookAt(scene.position);
+    pauseCamera.position.x = 0;
+    pauseCamera.position.y = 0;
+    pauseCamera.position.z = 70;
+
 }
 
 
@@ -249,6 +293,9 @@ function update(){
     }
     if(keyMap[51]) { //3
     }
+    if(keyMap[32]){
+        ispause = !ispause;
+    }
 
 
 }
@@ -307,4 +354,18 @@ function render() {
   
       renderer.render(scene, camera[2]);
     }*/
+}
+
+function render() {
+    //'use strict';
+    renderer.autoClear = false;
+    renderer.clear();
+    
+    if (activeCamera == 0) {
+        renderer.render(scene, camera[0]);
+    }
+    if (ispause){
+      renderer.clearDepth();
+      renderer.render(pauseScene, pauseCamera);
+    }
 }
