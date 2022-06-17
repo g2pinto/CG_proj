@@ -179,7 +179,7 @@ function createSecondOrigami(){
 }
 
 function createThirdOrigami(){
-
+    const sprite = new THREE.TextureLoader().load("js/textures/pattern1.jpg");
     swan = new THREE.Object3D();
 
     const geometry = new THREE.BufferGeometry();
@@ -205,15 +205,23 @@ function createThirdOrigami(){
     geometry.addGroup(18,6,3); //face2
     geometry.addGroup(24,3,4); //face1
 
-    const geometryMaterialArray = [
-        new THREE.MeshLambertMaterial ({ color: 0x0000ff, wireframe: false }),
-        new THREE.MeshLambertMaterial ({ color: 0x00ff00, wireframe: false }),
-        new THREE.MeshLambertMaterial ({ color: 0xff0000, wireframe: false }),
-        new THREE.MeshLambertMaterial ({ color: 0x0000ff, wireframe: false }),
-        new THREE.MeshLambertMaterial ({ color: 0x00ff00, wireframe: false })
+    const geometryLambertArray = [
+        new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
+        new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
+        new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
+        new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
+        new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide})
     ];
 
-    const mesh = new THREE.Mesh(geometry, geometryMaterialArray);
+    const geometryPhongArray = [
+        new THREE.MeshPhongMaterial({map: sprite, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 }),
+        new THREE.MeshPhongMaterial({map: sprite, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 }),
+        new THREE.MeshPhongMaterial({map: sprite, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 }),
+        new THREE.MeshPhongMaterial({map: sprite, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 }),
+        new THREE.MeshPhongMaterial({map: sprite, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 })
+    ]
+
+    const mesh = new THREE.Mesh(geometry, geometryLambertArray);
 
     // let wireMaterial = new THREE.MeshLambertMaterial({
     //     color: 0x000000,
