@@ -41,6 +41,8 @@ var directionalLight;
 var origami20;
 var origami21;
 
+var swan, swan2;
+
 var material = [], material1 = [];
 var material2 = [], material3 = [];
 
@@ -176,6 +178,64 @@ function createSecondOrigami(){
 
 }
 
+function createThirdOrigami(){
+
+    swan = new THREE.Object3D();
+
+    const geometry = new THREE.BufferGeometry();
+
+    const swanGeometry = new Float32Array([
+        0,0,0, 30,14.4,0, -6,7.2,0,         //first triangle face5 
+        0,0,0, 20.4,0,0, 30,14.4,0,         //second triangle face5 
+        0,0,1, 20.4,0,1, 13.2,10.8,0,       //first triangle face4 
+        0,0,1, 13.2,10.8,0, -6,7.2,0,       //second triangle face4 
+        0,0,2, 10.8,0,2, 13.2,10.8,1,       //first triangle face3 
+        0,0,2, 13.2,10.8,1, -6,7.2,0,       //second triangle face3 
+        -6,7.2,0, 0,0,3, 0,28.8,2,          //first triangle face2 
+        -6,7.2,0, 0,28.8,2, -2.4,30,0,      //second triangle face2
+        -8.4,20.4,0, 0,28.8,2, -2.4,30,0    //face1  
+    ])
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(swanGeometry,3));
+    geometry.computeVertexNormals();
+
+    geometry.addGroup(0,6,0); //face5
+    geometry.addGroup(6,6,1); //face4
+    geometry.addGroup(12,6,2); //face3
+    geometry.addGroup(18,6,3); //face2
+    geometry.addGroup(24,3,4); //face1
+
+    const geometryMaterialArray = [
+        new THREE.MeshLambertMaterial ({ color: 0x0000ff, wireframe: false }),
+        new THREE.MeshLambertMaterial ({ color: 0x00ff00, wireframe: false }),
+        new THREE.MeshLambertMaterial ({ color: 0xff0000, wireframe: false }),
+        new THREE.MeshLambertMaterial ({ color: 0x0000ff, wireframe: false }),
+        new THREE.MeshLambertMaterial ({ color: 0x00ff00, wireframe: false })
+    ];
+
+    const mesh = new THREE.Mesh(geometry, geometryMaterialArray);
+
+    // let wireMaterial = new THREE.MeshLambertMaterial({
+    //     color: 0x000000,
+    //     wireframe: true,
+    //     wireframeLinewidth: 2
+    // });
+
+    //var swanWireframe = new THREE.Mesh(geometry, wireMaterial);
+
+    swan.add(mesh);
+    //swan.add(swanWireframe);
+
+    swan2 = swan.clone();
+    swan2.rotateY(Math.PI);
+
+    swan.add(swan2);
+
+    swan.position.set(35,5,0);
+    scene.add(swan);
+}
+
+
 function createDirectionalLight(){
     directionalLight = new THREE.DirectionalLight(0xffffff);
     directionalLight.position.set(0, 100, 50);
@@ -292,6 +352,7 @@ function createScene(){
     createFloor();
     createFirstOrigami();
     createSecondOrigami();
+    createThirdOrigami();
     createDirectionalLight();
     createHolofoteLight();
     createFloor();
@@ -342,7 +403,7 @@ function resetScene(){
     // Figures reset
     origami20.rotation.set(0,0,0);
     origami10.rotation.set(0,0,0);
-    //origami30.rotation.set(0,0,0); remove comment when implemented
+    swan.rotation.set(0,0,0); // remove comment when implemented
     // remove pause
     ispause = false;
     clock.start();
@@ -378,6 +439,18 @@ function resizeFrontalCamera(){
 	}
 }
 
+// function createPerspectiveCamera(){
+//     camera[1] = new THREE.PerspectiveCamera(45, window.innerWidth, window.innerHeight, 1,1000);
+
+//     camera[1].position.x = 100;
+//     camera[1].position.y = 50;
+
+//     camera[1].rotateY(Math.PI/2);
+    
+//     camera[1].lookAt(scene.position);
+//     const helper = new THREE.CameraHelper(camera[1]);
+//     scene.add(helper);
+// }
 
 function onDocumentKeyDown(event){
     var keyCode = event.keyCode;
@@ -429,6 +502,12 @@ function update(){
     }
     if (keyMap[87]) {//first origami right W(w)
         origami10.rotateY(Math.PI/180*delta*50)
+    }
+    if (keyMap[84]) { //third origami left T(t)
+        swan.rotateY(-Math.PI/180*delta*50)
+    }
+    if (keyMap[89]){ //third origami right Y(y)
+        swan.rotateY(Math.PI/180*delta*50)
     }
     
     if(keyMap[49]) { //1
@@ -520,14 +599,22 @@ function update(){
 
 function createCameras(){
 	
-	createFrontalCamera();  
+	createFrontalCamera();
+    //createPerspectiveCamera();
+    createVrCamera(); 
 
+}
+
+function createVrCamera(){
+    camera[2] = new THREE.StereoCamera();
 }
 
 function initializeVR(){
     document.body.appendChild( VRButton.createButton (renderer));
-    var vrCamera = new THREE.StereoCamera();
-    renderer.setAnimationLoop(scene, vrCamera );
+}
+
+function display(){
+    renderer.render(scene, camera[0]);
 }
 
 
@@ -547,7 +634,7 @@ function init() {
     createPauseCamera();
 
     initializeVR();
-    
+    renderer.setAnimationLoop(display);
 
     document.addEventListener("keydown", onDocumentKeyDown, true);
     document.addEventListener("keyup", onDocumentKeyUp, true);
