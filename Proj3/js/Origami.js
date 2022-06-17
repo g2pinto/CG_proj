@@ -339,30 +339,29 @@ function createPauseCamera() {
 }
 
 function resetScene(){
+    // Figures reset
     origami20.rotation.set(0,0,0);
     origami10.rotation.set(0,0,0);
+    //origami30.rotation.set(0,0,0); remove comment when implemented
+    // remove pause
     ispause = false;
+    clock.start();
+    // reset lights and camera
+    activeCamera = 0;
     directionalLight.intensity = 1;
     directionalOn = true;
-    activeCamera = 0;
-    clock.start();
     spotLightHF1.intensity = 5;
     spotLightOn1 = true;
     spotLightHF2.intensity = 5;
     spotLightOn2 = true;
-    //spotLightHF3.intensity = 1;
-    //spotLightOn3 = true;
+    //spotLightHF3.intensity = 1; remove comment when implemented
+    //spotLightOn3 = true; remove comment when implemented
 }
 
 
 function createFrontalCamera() {
 
-    
-
     camera[0] = new THREE.OrthographicCamera(-aspectRatio * viewSize / 2, aspectRatio * viewSize / 2, viewSize / 2, -viewSize / 2, 0.1, 1000);
-    
-
-
     //camera[0] = new THREE.OrthographicCamera(-70, 70, 45, -45, 0.1, 10000);
 
     camera[0].lookAt(scene.position);
