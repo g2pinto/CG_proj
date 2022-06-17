@@ -201,19 +201,20 @@ function createThirdOrigami(){
     geometry.setAttribute('position', new THREE.BufferAttribute(swanGeometry,3));
     geometry.computeVertexNormals();
 
-    geometry.addGroup(0,6,0); //face5
-    geometry.addGroup(6,6,1); //face4
-    geometry.addGroup(12,6,2); //face3
-    geometry.addGroup(18,6,3); //face2
-    geometry.addGroup(24,3,4); //face1
+    material = new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide});
+    // geometry.addGroup(0,6,0); //face5
+    // geometry.addGroup(6,6,1); //face4
+    // geometry.addGroup(12,6,2); //face3
+    // geometry.addGroup(18,6,3); //face2
+    // geometry.addGroup(24,3,4); //face1
 
-    const geometryLambertArray = [
-        new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
-        new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
-        new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
-        new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
-        new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide})
-    ];
+    // const geometryLambertArray = [
+    //     new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
+    //     new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
+    //     new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
+    //     new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide}),
+    //     new THREE.MeshLambertMaterial ({map: sprite, wireframe: false, side: THREE.DoubleSide})
+    // ];
 
     const geometryPhongArray = [
         new THREE.MeshPhongMaterial({map: sprite, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 }),
@@ -223,7 +224,7 @@ function createThirdOrigami(){
         new THREE.MeshPhongMaterial({map: sprite, wireframe: false, side: THREE.DoubleSide, specular: 0xffffff, shininess: 60 })
     ]
 
-    const mesh = new THREE.Mesh(geometry, geometryLambertArray);
+    const mesh = new THREE.Mesh(geometry, material);
 
     // let wireMaterial = new THREE.MeshLambertMaterial({
     //     color: 0x000000,
@@ -287,9 +288,9 @@ function createHolofoteLight() {
     spotLightHF2 = new THREE.SpotLight(0xffffff, 5, 50, Math.PI / 50);
     spotLightHF3 = new THREE.SpotLight(0xffffff, 5, 50, Math.PI / 10);
 
-    spotLightHF1.position.set(0,0,10);
-    spotLightHF2.position.set(0,0,10);
-    spotLightHF3.position.set(0,0,10);
+    spotLightHF1.position.set(0,0,7.5);
+    spotLightHF2.position.set(0,0,7.5);
+    spotLightHF3.position.set(0,0,7.5);
 
     
 
@@ -402,9 +403,9 @@ function createScene(){
     createFirstOrigami();
     createSecondOrigami();
     createThirdOrigami();
-    createHolofote(-40,4,10);
-    createHolofote(0,4,10);
-    createHolofote(35,4,10);
+    createHolofote(-40,4,7.5);
+    createHolofote(0,4,7.5);
+    createHolofote(35,4,7.5);
     createDirectionalLight();
     createHolofoteLight();
     createFloor();
@@ -493,17 +494,16 @@ function resizeFrontalCamera(){
 
 function createPerspectiveCamera(){
     
-    camera[1] = new THREE.PerspectiveCamera(45, window.innerWidth, window.innerHeight, 1,1000);
+    camera[1] = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1,1000);
 
-    camera[1].position.x = 60;
-    camera[1].position.y = 20;
-    camera[1].position.z = 40;
+    camera[1].position.x = 120;
+    camera[1].position.y = 80;
+    camera[1].position.z = 130;
 
     camera[1].rotateY(Math.PI/2);
     
     camera[1].lookAt(scene.position);
-    //const helper = new THREE.CameraHelper(camera[1]);
-    //scene.add(helper);
+    
 }
 
 function onDocumentKeyDown(event){
@@ -524,16 +524,6 @@ function onResize(){
     //resizeFrontalCamera();
     //resizePerspectiveCamera(1);
     //resizePerspectiveCamera(2);
-}
-
-function onDocumentKeyDown(event){
-    var keyCode = event.keyCode;
-    keyMap[keyCode] = true;
-}
-
-function onDocumentKeyUp(event){
-    var keyCode = event.keyCode;
-    keyMap[keyCode] = false;
 }
 
 function update(){
