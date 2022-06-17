@@ -489,6 +489,7 @@ function resizeFrontalCamera(){
     if (window.innerHeight > 0 && window.innerWidth > 0){
         aspectRatio = window.innerWidth / window.innerHeight;
         camera[0] = new THREE.OrthographicCamera(-aspectRatio * viewSize / 2, aspectRatio * viewSize / 2, viewSize / 2, -viewSize / 2, 0.1, 1000);
+        camera[0].updateProjectionMatrix;
 	}
 }
 
@@ -504,6 +505,11 @@ function createPerspectiveCamera(){
     
     camera[1].lookAt(scene.position);
     
+}
+
+function resizePerspectiveCamera(){
+    camera[1].aspect = aspectRatio;
+	camera[1].updateProjectionMatrix();
 }
 
 function onDocumentKeyDown(event){
@@ -555,10 +561,10 @@ function update(){
     }
     
     if(keyMap[49]) { //1
-        activeCamera = 0;
+        activeCamera = 1;
     }
     if(keyMap[50]) { //2
-        activeCamera = 1;
+        activeCamera = 0;
     }
     if(keyMap[51]) { //3
         resetScene();
