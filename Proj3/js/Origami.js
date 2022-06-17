@@ -368,31 +368,6 @@ function createPodium(){
 
 }
 
-function ilumination() {
-	if (!Basic) {
-		meshOr20.material = material[0];
-		meshOr21.material = material1[0];
-		meshOr22.material = material2[0];
-		meshOr23.material = material3[0];
-		
-		
-
-		Phong = false;
-		Basic = true;
-		Lambert = false;
-	}
-	else {
-		meshOr20.material = material[1];
-		meshOr21.material = material1[1];
-		meshOr22.material = material2[1];
-		meshOr23.material = material3[1];
-		
-
-		Phong = true;
-		Basic = false;
-		Lambert = false;
-	}
-}
 
 function createScene(){
 	
@@ -581,7 +556,7 @@ function update(){
         keyMap[32] = false;
     }
     if(keyMap[65]){ //a(A)
-        /* if (!Lambert) {
+         if (!Lambert) {
             meshOr20.material = material[0];
             meshOr21.material = material1[0];
             meshOr22.material = material2[0];
@@ -592,7 +567,7 @@ function update(){
             Basic = false;
             Lambert = true;
         }
-        else { */
+        else { 
             
             meshOr20.material = material[1];
             meshOr21.material = material1[1];
@@ -603,8 +578,35 @@ function update(){
             Phong = true;
             Basic = false;
             Lambert = false;
-        //}
+        }
     }
+
+    if(keyMap[83]){
+        if (!Basic) {
+            meshOr20.material = material[0];
+            meshOr21.material = material1[0];
+            meshOr22.material = material2[0];
+            meshOr23.material = material3[0];
+            
+            
+    
+            Phong = false;
+            Basic = true;
+            Lambert = false;
+        }
+        else {
+            meshOr20.material = material[1];
+            meshOr21.material = material1[1];
+            meshOr22.material = material2[1];
+            meshOr23.material = material3[1];
+            
+    
+            Phong = true;
+            Basic = false;
+            Lambert = false;
+        }
+    }
+
     if(keyMap[68]) { //D
         if (directionalOn){
             directionalLight.intensity = 0.1;
