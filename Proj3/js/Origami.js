@@ -43,6 +43,8 @@ var origami21;
 
 var swan, swan2;
 
+var holofote;
+
 var material = [], material1 = [];
 var material2 = [], material3 = [];
 
@@ -255,32 +257,67 @@ function createDirectionalLight(){
     scene.add( directionalLight );
 }
 
+function createHolofote(x,y,z){
+    holofote = new THREE.Object3D();
+
+    geometry = new THREE.SphereGeometry(1,32,16);
+    material = new THREE.MeshBasicMaterial ({color: 0xC9C9C9, wireframe: false})
+
+    mesh = new THREE.Mesh(geometry, material);
+
+    holofote.add(mesh);
+
+    geometry = new THREE.ConeGeometry(1,2,32);
+    material = new THREE.MeshBasicMaterial ({color: 0xC9C9C9, wireframe: false})
+
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotateX(Math.PI/2);
+    mesh.position.set(0,0,-1);
+
+    holofote.add(mesh),
+
+    holofote.position.set(x,y,z);
+    holofote.rotateX(Math.PI/4);
+    scene.add(holofote);
+}
+
 function createHolofoteLight() {
 
-    spotLightHF1 = new THREE.SpotLight(0xffffff, 5, 50, Math.PI / 50);
-    spotLightHF2 = new THREE.SpotLight(0xffffff, 5, 50, Math.PI / 10);
-    //spotLightHF3 = new THREE.SpotLight(0xffffff, 5, 50, Math.PI / 10); */
+    spotLightHF1 = new THREE.SpotLight(0xffffff, 5, 50, Math.PI / 10);
+    spotLightHF2 = new THREE.SpotLight(0xffffff, 5, 50, Math.PI / 50);
+    spotLightHF3 = new THREE.SpotLight(0xffffff, 5, 50, Math.PI / 10);
 
     spotLightHF1.position.set(0,0,10);
-     spotLightHF2.position.set(0, 0,10);
-    //spotLightHF3.position.set(0, 45, -20); */
+    spotLightHF2.position.set(0,0,10);
+    spotLightHF3.position.set(0,0,10);
 
-    spotLightHF1.target.position.set(0,0, 0);
-     spotLightHF2.target.position.set(0, 0, 0);
-    //spotLightHF3.target.position.set(0, 10, 0); */
-
-    spotLightHF1.castShadow = true;
-     spotLightHF2.castShadow = true;
-    //spotLightHF3.castShadow = true; */
-
-    origami20.add(spotLightHF1.target);
-    origami10.add(spotLightHF2.target);
     
 
-    origami20.add(spotLightHF1);
+    spotLightHF1.target.position.set(0, 0, 0);
+    spotLightHF2.target.position.set(0, 0, 0);
+    spotLightHF3.target.position.set(0, 0, 0);
+
+    spotLightHF1.castShadow = true;
+    spotLightHF2.castShadow = true;
+    spotLightHF3.castShadow = true;
+
+    origami10.add(spotLightHF1.target);
+    origami20.add(spotLightHF2.target);
+    swan.add(spotLightHF3.target);
+    
 
     spotLightHF1.intensity = 5;
-    origami10.add(spotLightHF2);
+    
+    origami10.add(spotLightHF1);
+    origami20.add(spotLightHF2);
+    swan.add(spotLightHF3);
+    
+    // const spotLightHelper1 = new THREE.SpotLightHelper( spotLightHF1 );
+    // scene.add( spotLightHelper1 );
+    // const spotLightHelper2 = new THREE.SpotLightHelper( spotLightHF2 );
+    // scene.add( spotLightHelper2 );
+    // const spotLightHelper3 = new THREE.SpotLightHelper( spotLightHF3 );
+    // scene.add( spotLightHelper3 );
     
 
 }
@@ -289,7 +326,7 @@ function createFloor(){
 
 
     geometry = new THREE.PlaneGeometry(1000, 1000);
-    material = new THREE.MeshBasicMaterial ({ color: 0x964B00, wireframe: false });
+    material = new THREE.MeshLambertMaterial ({color: 0x964B00, wireframe: false})
     mesh = new THREE.Mesh(geometry, material);
     mesh.material.side = THREE.DoubleSide;
 
@@ -303,21 +340,21 @@ function createPodium(){
     podium = new THREE.Object3D();
 
     geometry = new THREE.BoxGeometry(120, 6, 15);
-    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: false });
+    material = new THREE.MeshLambertMaterial ({ color: 0x0000ff, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
 
     podium.add(mesh);
 
 
     geometry = new THREE.BoxGeometry(5, 4, 3);
-    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: false });
+    material = new THREE.MeshLambertMaterial ({ color: 0x0000ff, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0,-1, 9);
 
     podium.add(mesh);
 
     geometry = new THREE.BoxGeometry(5, 2, 3);
-    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: false });
+    material = new THREE.MeshLambertMaterial ({ color: 0x0000ff, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, -2, 12);
 
@@ -365,6 +402,9 @@ function createScene(){
     createFirstOrigami();
     createSecondOrigami();
     createThirdOrigami();
+    createHolofote(-40,4,10);
+    createHolofote(0,4,10);
+    createHolofote(35,4,10);
     createDirectionalLight();
     createHolofoteLight();
     createFloor();
@@ -427,8 +467,8 @@ function resetScene(){
     spotLightOn1 = true;
     spotLightHF2.intensity = 5;
     spotLightOn2 = true;
-    //spotLightHF3.intensity = 1; remove comment when implemented
-    //spotLightOn3 = true; remove comment when implemented
+    spotLightHF3.intensity = 1; //remove comment when implemented
+    spotLightOn3 = true; //remove comment when implemented
 }
 
 
@@ -451,18 +491,20 @@ function resizeFrontalCamera(){
 	}
 }
 
-// function createPerspectiveCamera(){
-//     camera[1] = new THREE.PerspectiveCamera(45, window.innerWidth, window.innerHeight, 1,1000);
-
-//     camera[1].position.x = 100;
-//     camera[1].position.y = 50;
-
-//     camera[1].rotateY(Math.PI/2);
+function createPerspectiveCamera(){
     
-//     camera[1].lookAt(scene.position);
-//     const helper = new THREE.CameraHelper(camera[1]);
-//     scene.add(helper);
-// }
+    camera[1] = new THREE.PerspectiveCamera(45, window.innerWidth, window.innerHeight, 1,1000);
+
+    camera[1].position.x = 60;
+    camera[1].position.y = 20;
+    camera[1].position.z = 40;
+
+    camera[1].rotateY(Math.PI/2);
+    
+    camera[1].lookAt(scene.position);
+    //const helper = new THREE.CameraHelper(camera[1]);
+    //scene.add(helper);
+}
 
 function onDocumentKeyDown(event){
     var keyCode = event.keyCode;
@@ -526,6 +568,7 @@ function update(){
         activeCamera = 0;
     }
     if(keyMap[50]) { //2
+        activeCamera = 1;
     }
     if(keyMap[51]) { //3
         resetScene();
@@ -554,6 +597,7 @@ function update(){
             Lambert = true;
         }
         else { */
+            
             meshOr20.material = material[1];
             meshOr21.material = material1[1];
             meshOr22.material = material2[1];
@@ -595,7 +639,7 @@ function update(){
         }
         keyMap[88] = false;
     }
-    /*if(keyMap[67]){ //c
+    if(keyMap[67]){ //c
         if (spotLightOn3){
             spotLightHF3.intensity = 0.1;
             spotLightOn3 = false;
@@ -604,7 +648,7 @@ function update(){
             spotLightOn3 = true;
         }
         keyMap[67] = false;
-    } */
+    } 
 
 
 }
@@ -612,7 +656,7 @@ function update(){
 function createCameras(){
 	
 	createFrontalCamera();
-    //createPerspectiveCamera();
+    createPerspectiveCamera();
     createVrCamera(); 
 
 }
@@ -674,6 +718,9 @@ function render() {
     
     if (activeCamera == 0) {
         renderer.render(scene, camera[0]);
+    }
+    if (activeCamera == 1){
+        renderer.render(scene, camera[1]);
     }
     if (ispause){
       renderer.clearDepth();
