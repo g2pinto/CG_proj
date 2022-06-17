@@ -235,12 +235,16 @@ function createThirdOrigami(){
     //swan.add(swanWireframe);
 
     swan2 = swan.clone();
-    swan2.rotateY(Math.PI);
-
+    swan2.applyMatrix4(new THREE.Matrix4().set( 1,0,0,0,
+                                                0,-1,0,0,
+                                                0,0,1,0,
+                                                0,0,0,1));
+    swan2.rotateX(Math.PI)
     swan.add(swan2);
 
     swan.position.set(35,5,0);
     scene.add(swan);
+   
 }
 
 
