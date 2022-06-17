@@ -5,7 +5,9 @@
 var controls;
 
 var spotLightHF1, spotLightHF2, spotLightHF3;
-
+var spotLightOn1 = true;
+var spotLightOn2 = true;
+var spotLightOn3 = true;
 
 var scene, renderer;
 var pauseScene, pauseCamera;
@@ -16,6 +18,8 @@ var geometry, material, mesh;
 var planet;
 var shipAux;
 var shipBody;
+
+var directionalOn;
 
 var keyMap = [];
 
@@ -31,6 +35,7 @@ var delta;
 var origami1;
 var origami10;
 var origami11 = new THREE.Object3D();
+var directionalOn = true;
 var directionalLight;
 
 var origami20;
@@ -46,6 +51,9 @@ var floor, podium;
 var Phong = true;
 var Basic = false;
 var Lambert = false;
+
+var aspectRatio = window.innerWidth / window.innerHeight;
+var viewSize = 90;
 
 function createFirstOrigami(){
     origami10 = new THREE.Object3D();
@@ -169,7 +177,7 @@ function createSecondOrigami(){
 }
 
 function createDirectionalLight(){
-    var directionalLight = new THREE.DirectionalLight(0xffffff);
+    directionalLight = new THREE.DirectionalLight(0xffffff);
     directionalLight.position.set(0, 100, 50);
     directionalLight.castShadow = true;
     scene.add( directionalLight );
@@ -223,21 +231,21 @@ function createPodium(){
     podium = new THREE.Object3D();
 
     geometry = new THREE.BoxGeometry(120, 6, 15);
-    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: true });
+    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
 
     podium.add(mesh);
 
 
     geometry = new THREE.BoxGeometry(5, 4, 3);
-    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: true });
+    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0,-1, 9);
 
     podium.add(mesh);
 
     geometry = new THREE.BoxGeometry(5, 2, 3);
-    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: true });
+    material = new THREE.MeshBasicMaterial ({ color: 0x0000ff, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, -2, 12);
 
@@ -285,7 +293,6 @@ function createScene(){
     createFirstOrigami();
     createSecondOrigami();
     createDirectionalLight();
-    createPauseSign();
     createHolofoteLight();
     createFloor();
     createPodium();
@@ -301,11 +308,11 @@ function createPauseScene(){
 	
 	pauseScene = new THREE.Scene();
 	
-	scene.add(new THREE.AxesHelper(10));
+	//scene.add(new THREE.AxesHelper(10));
     //createFloor();
     createPauseCamera();
     createPauseSign();
-    createHolofoteLight();
+    //createHolofoteLight();
 
 	
 }
@@ -317,7 +324,7 @@ function createPauseSign(){
 	var sign = new THREE.Mesh( geometry, material );
 	//sign.material.side = THREE.DoubleSide;
     sign.position.z = 10
-	scene.add( sign );
+	pauseScene.add( sign );
 }
 
 function createPauseCamera() {
@@ -331,16 +338,45 @@ function createPauseCamera() {
 
 }
 
+function resetScene(){
+    origami20.rotation.set(0,0,0);
+    origami10.rotation.set(0,0,0);
+    ispause = false;
+    directionalLight.intensity = 1;
+    directionalOn = true;
+    activeCamera = 0;
+    clock.start();
+    spotLightHF1.intensity = 5;
+    spotLightOn1 = true;
+    spotLightHF2.intensity = 5;
+    spotLightOn2 = true;
+    //spotLightHF3.intensity = 1;
+    //spotLightOn3 = true;
+}
+
 
 function createFrontalCamera() {
 
-    camera[0] = new THREE.OrthographicCamera(-70, 70, 45, -45, 0.1, 10000);
+    
+
+    camera[0] = new THREE.OrthographicCamera(-aspectRatio * viewSize / 2, aspectRatio * viewSize / 2, viewSize / 2, -viewSize / 2, 0.1, 1000);
+    
+
+
+    //camera[0] = new THREE.OrthographicCamera(-70, 70, 45, -45, 0.1, 10000);
 
     camera[0].lookAt(scene.position);
     camera[0].position.x = 0;
     camera[0].position.y = 0;
     camera[0].position.z = 100;
 
+}
+
+function resizeFrontalCamera(){
+    if (window.innerHeight > 0 && window.innerWidth > 0){
+        aspectRatio = window.innerWidth / window.innerHeight;
+        camera[0] = new THREE.OrthographicCamera(-aspectRatio * viewSize / 2, aspectRatio * viewSize / 2, viewSize / 2, -viewSize / 2, 0.1, 1000);
+	}
 }
 
 
@@ -359,6 +395,7 @@ function onResize(){
 
     renderer.setSize(window.innerWidth, window.innerHeight);
 
+    //resizeFrontalCamera();
     //resizePerspectiveCamera(1);
     //resizePerspectiveCamera(2);
 }
@@ -401,8 +438,10 @@ function update(){
     if(keyMap[50]) { //2
     }
     if(keyMap[51]) { //3
+        resetScene();
+        keyMap[51] = false;
     }
-    if(keyMap[32]){
+    if(keyMap[32]){ //spacebar
         if (ispause){
             clock.start();
         } else{
@@ -410,6 +449,7 @@ function update(){
         }
         console.log("hello");
         ispause = !ispause;
+        keyMap[32] = false;
     }
     if(keyMap[65]){ //a(A)
         /* if (!Lambert) {
@@ -435,6 +475,46 @@ function update(){
             Lambert = false;
         //}
     }
+    if(keyMap[68]) { //D
+        if (directionalOn){
+            directionalLight.intensity = 0.1;
+            directionalOn = false;
+        } else{
+            directionalLight.intensity = 1;
+            directionalOn = true;
+        }
+        keyMap[68] = false;
+    }
+    if(keyMap[90]){ //z
+        if (spotLightOn1){
+            spotLightHF1.intensity = 0.1;
+            spotLightOn1 = false;
+        } else{
+            spotLightHF1.intensity = 5;
+            spotLightOn1 = true;
+        }
+        keyMap[90] = false;
+    }
+    if(keyMap[88]){ //x
+        if (spotLightOn2){
+            spotLightHF2.intensity = 0.1;
+            spotLightOn2 = false;
+        } else{
+            spotLightHF2.intensity = 5;
+            spotLightOn2 = true;
+        }
+        keyMap[88] = false;
+    }
+    /*if(keyMap[67]){ //c
+        if (spotLightOn3){
+            spotLightHF3.intensity = 0.1;
+            spotLightOn3 = false;
+        } else{
+            spotLightHF3.intensity = 5;
+            spotLightOn3 = true;
+        }
+        keyMap[67] = false;
+    } */
 
 
 }
@@ -464,6 +544,8 @@ function init() {
 
     createScene();
     createCameras();
+    createPauseScene();
+    createPauseCamera();
 
     initializeVR();
     
@@ -486,26 +568,6 @@ function animate() {
 
 }
 
-function render() {
-    //var followVec = new THREE.Vector3(shipBody.position.x, shipBody.position.y+3,shipBody.position.z)
-    if (activeCamera == 0) {
-      renderer.render(scene, camera[0]);
-   
-    }/*else if (activeCamera == 1){
-        renderer.render(scene, camera[1]);
-    
-    } else if (activeCamera == 2){
-      var camPosition = new THREE.Vector3(0, -20, 20);
-      var shipPosition = camPosition.applyMatrix4(shipBody.matrixWorld);
-  
-      camera[2].position.x = shipPosition.x;
-      camera[2].position.y = shipPosition.y;
-      camera[2].position.z = shipPosition.z;
-      camera[2].lookAt(followVec);
-  
-      renderer.render(scene, camera[2]);
-    }*/
-}
 
 function render() {
     //'use strict';
@@ -515,8 +577,9 @@ function render() {
     if (activeCamera == 0) {
         renderer.render(scene, camera[0]);
     }
-    //if (ispause){
-    //  renderer.clearDepth();
-    //  renderer.render(pauseScene, pauseCamera);
-    //}
+    if (ispause){
+      renderer.clearDepth();
+      renderer.render(pauseScene, pauseCamera);
+      console.log("hi");
+    }
 }
